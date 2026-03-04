@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<!--
+  Coupons Management
+  - Left: Coupons list with table
+  - Right: Form to add/edit coupon
+-->
+<ScrollPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.elearning.admin.controllers.CouponsController"
+            fitToWidth="true" styleClass="scroll-pane-clean">
+    <VBox spacing="20" styleClass="dashboard-root">
+
+        <!-- Header -->
+        <HBox spacing="16" alignment="CENTER_LEFT" styleClass="coupons-header">
+            <VBox spacing="4" HBox.hgrow="ALWAYS">
+                <Label text="Mí giảm giá" styleClass="coupons-page-title"/>
+                <Label text="Quản lý các mí coupon và chương trình khuyến míi" styleClass="coupons-page-subtitle"/>
+            </VBox>
+        </HBox>
+
+        <!-- Stats Cards -->
+        <HBox spacing="16">
+            <VBox styleClass="coupons-stat-card coupons-stat-active" HBox.hgrow="ALWAYS">
+                <Label text="COUPON ĐANG HOẠT Đ�~NG" styleClass="coupons-stat-label"/>
+                <Label text="8" styleClass="coupons-stat-value"/>
+                <Label text="Có th�f sử dụng" styleClass="coupons-stat-sub"/>
+            </VBox>
+            <VBox styleClass="coupons-stat-card coupons-stat-used" HBox.hgrow="ALWAYS">
+                <Label text="Đ�f SỬ DỤNG THÁNG N�•Y" styleClass="coupons-stat-label"/>
+                <Label text="247" styleClass="coupons-stat-value"/>
+                <Label text="Lượt áp dụng" styleClass="coupons-stat-sub"/>
+            </VBox>
+            <VBox styleClass="coupons-stat-card coupons-stat-discount" HBox.hgrow="ALWAYS">
+                <Label text="T�"NG GIẢM GIÁ" styleClass="coupons-stat-label"/>
+                <Label text="4.2M �,�" styleClass="coupons-stat-value"/>
+                <Label text="Tháng này" styleClass="coupons-stat-sub"/>
+            </VBox>
+        </HBox>
+
+        <!-- Main Content: Table + Form -->
+        <HBox spacing="20" prefHeight="600">
+            <!-- Left: Coupons Table -->
+            <VBox spacing="14" HBox.hgrow="ALWAYS">
+                <VBox styleClass="coupons-table-card" VBox.vgrow="ALWAYS">
+                    <HBox alignment="CENTER_LEFT" spacing="12" styleClass="coupons-table-header">
+                        <Label text="Tất cả mí giảm giá" styleClass="coupons-table-title"/>
+                        <Region HBox.hgrow="ALWAYS"/>
+                        <Label fx:id="countLabel" text="15 coupons" styleClass="coupons-count-badge"/>
+                    </HBox>
+                    <TableView fx:id="couponsTable" VBox.vgrow="ALWAYS" styleClass="coupons-table">
+                        <columns>
+                            <TableColumn fx:id="codeCol" text="Mí Code" prefWidth="140"/>
+                            <TableColumn fx:id="discountCol" text="Giảm giá" prefWidth="100"/>
+                            <TableColumn fx:id="activeCol" text="Trạng thái" prefWidth="120"/>
+                            <TableColumn fx:id="usageCol" text="Đí dùng" prefWidth="100"/>
+                            <TableColumn fx:id="expiryCol" text="Hết hạn" prefWidth="120"/>
+                            <TableColumn fx:id="actionsCol" text="" prefWidth="100"/>
+                        </columns>
+                    </TableView>
+                </VBox>
+            </VBox>
+
+            <!-- Right: Form Panel -->
+            <VBox spacing="16" prefWidth="360" styleClass="coupons-form-panel">
+                <VBox spacing="8" styleClass="coupons-form-header">
+                    <Label fx:id="formTitle" text="Tạo mí giảm giá m�>i" styleClass="coupons-form-title"/>
+                    <Label text="Điền thông tin bên dư�>i" styleClass="coupons-form-subtitle"/>
+                </VBox>
+
+                <!-- Form Fields -->
+                <VBox spacing="16" styleClass="coupons-form-body">
+                    <VBox spacing="8">
+                        <Label text="Mí Code *" styleClass="coupons-field-label"/>
+                        <TextField fx:id="codeField" promptText="VD: SALE2026" styleClass="coupons-field"/>
+                    </VBox>
+
+                    <VBox spacing="8">
+                        <Label text="Giảm giá (%) *" styleClass="coupons-field-label"/>
+                        <TextField fx:id="discountField" promptText="0-100" styleClass="coupons-field"/>
+                    </VBox>
+
+                    <VBox spacing="8">
+                        <Label text="Ngày hết hạn *" styleClass="coupons-field-label"/>
+                        <DatePicker fx:id="expiryPicker" promptText="Chọn ngày" styleClass="coupons-datepicker"/>
+                    </VBox>
+
+                    <VBox spacing="8">
+                        <Label text="S�' lượng t�'i �'a" styleClass="coupons-field-label"/>
+                        <TextField fx:id="maxUsageField" promptText="Không gi�>i hạn" styleClass="coupons-field"/>
+                    </VBox>
+
+                    <VBox spacing="8">
+                        <HBox spacing="12" alignment="CENTER_LEFT">
+                            <CheckBox fx:id="activeCheckbox" selected="true" styleClass="coupons-checkbox"/>
+                            <Label text="Kích hoạt ngay" styleClass="coupons-field-label"/>
+                        </HBox>
+                    </VBox>
+                </VBox>
+
+                <!-- Action Buttons -->
+                <VBox spacing="10" styleClass="coupons-form-actions">
+                    <Button fx:id="btnSave" text="�💾� Lưu coupon" onAction="#handleSave" styleClass="coupons-btn-save"/>
+                    <Button fx:id="btnCancel" text="Hủy" onAction="#handleCancel" styleClass="coupons-btn-cancel"/>
+                </VBox>
+
+                <!-- Info Box -->
+                <VBox spacing="8" styleClass="coupons-info-box">
+                    <Label text="�💾� Gợi ý" styleClass="coupons-info-title"/>
+                    <Label text="�•� Code nên ngắn gọn, d�. nh�>&#10;�•� Giảm giá từ 5-50% là hợp lý&#10;�•� Đặt hạn sử dụng rõ ràng" 
+                           wrapText="true" styleClass="coupons-info-text"/>
+                </VBox>
+            </VBox>
+        </HBox>
+    </VBox>
+</ScrollPane>
+

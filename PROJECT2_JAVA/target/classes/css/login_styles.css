@@ -1,0 +1,72 @@
+.root {
+    -fx-background-color: #050509;
+    /* chừa viền để card không dính sát cạnh khi phóng to cửa sổ */
+    -fx-padding: 32;
+}
+
+.login-card {
+    -fx-background-color: linear-gradient(to bottom right, #3b0764, #020617);
+    -fx-padding: 32;
+    -fx-spacing: 24;
+    -fx-alignment: center;
+    -fx-background-radius: 18;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.55), 35, 0.2, 0, 18);
+}
+
+.app-title {
+    -fx-text-fill: #f9fafb;
+    -fx-font-size: 26px;
+    -fx-font-weight: bold;
+}
+
+.subtitle {
+    -fx-text-fill: #9ca3af;
+    -fx-font-size: 13px;
+}
+
+.field-label {
+    -fx-text-fill: #e5e7eb;
+    -fx-font-size: 12px;
+}
+
+.text-input {
+    -fx-background-color: #020617;
+    -fx-text-fill: #e5e7eb;
+    -fx-prompt-text-fill: #6b7280;
+    -fx-background-radius: 10;
+    -fx-border-radius: 10;
+    -fx-border-color: #4b5563;
+    -fx-border-width: 1;
+    -fx-padding: 8 10 8 10;
+}
+
+.text-input:focused {
+    -fx-border-color: #a855f7;
+    -fx-background-color: #020617;
+}
+
+.remember-check {
+    -fx-text-fill: #d1d5db;
+}
+
+.primary-button {
+    -fx-background-color: linear-gradient(to right, #8b5cf6, #ec4899);
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 999;
+    -fx-padding: 10 0 10 0;
+}
+
+.primary-button:hover {
+    -fx-background-color: linear-gradient(to right, #a855f7, #f472b6);
+}
+
+.error-label {
+    -fx-text-fill: #f97373;
+    -fx-font-size: 12px;
+}
+
+.footer-label {
+    -fx-text-fill: #6b7280;
+    -fx-font-size: 11px;
+}

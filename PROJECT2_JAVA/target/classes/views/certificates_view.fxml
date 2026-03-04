@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.elearning.admin.controllers.CertificatesController"
+      spacing="12"
+      styleClass="dashboard-root">
+
+    <Label text="Certificates" styleClass="dash-section-title"/>
+
+    <TableView fx:id="certTable" prefHeight="400">
+        <columns>
+            <TableColumn fx:id="userCol" text="User" prefWidth="200"/>
+            <TableColumn fx:id="courseCol" text="Course" prefWidth="240"/>
+            <TableColumn fx:id="issueCol" text="Issue Date" prefWidth="140"/>
+            <TableColumn fx:id="linkCol" text="PDF URL" prefWidth="180"/>
+        </columns>
+    </TableView>
+
+</VBox>
+
+

@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.chart.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<!--
+  Orders & Revenue Management
+  - Top: Revenue stats cards + Charts
+  - Middle: Filter bar
+  - Bottom: Orders table + Detail panel
+-->
+<ScrollPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.elearning.admin.controllers.OrdersController"
+            fitToWidth="true" styleClass="scroll-pane-clean">
+    <VBox spacing="20" styleClass="dashboard-root">
+
+        <!-- Header -->
+        <HBox spacing="16" alignment="CENTER_LEFT" styleClass="orders-header">
+            <VBox spacing="4" HBox.hgrow="ALWAYS">
+                <Label text="Đơn hàng &amp; Doanh thu" styleClass="orders-page-title"/>
+                <Label text="Quản lý �'ơn hàng và phân tích doanh thu" styleClass="orders-page-subtitle"/>
+            </VBox>
+        </HBox>
+
+        <!-- Revenue Stats Cards -->
+        <HBox spacing="16">
+            <VBox styleClass="orders-stat-card orders-stat-revenue" HBox.hgrow="ALWAYS">
+                <Label text="T�"NG DOANH THU" styleClass="orders-stat-label"/>
+                <Label text="12,450,000 �,�" styleClass="orders-stat-value"/>
+                <Label text="+18.5% so v�>i tháng trư�>c" styleClass="orders-stat-sub"/>
+            </VBox>
+            <VBox styleClass="orders-stat-card orders-stat-orders" HBox.hgrow="ALWAYS">
+                <Label text="ĐỢN H�•NG THÁNG N�•Y" styleClass="orders-stat-label"/>
+                <Label text="127" styleClass="orders-stat-value"/>
+                <Label text="+24 �'ơn so v�>i tháng trư�>c" styleClass="orders-stat-sub"/>
+            </VBox>
+            <VBox styleClass="orders-stat-card orders-stat-avg" HBox.hgrow="ALWAYS">
+                <Label text="GIÁ TR�S TRUNG B�ONH" styleClass="orders-stat-label"/>
+                <Label text="98,000 �,�" styleClass="orders-stat-value"/>
+                <Label text="M�-i �'ơn hàng" styleClass="orders-stat-sub"/>
+            </VBox>
+        </HBox>
+
+        <!-- Charts Row -->
+        <HBox spacing="16">
+            <!-- Revenue Chart -->
+            <VBox spacing="8" HBox.hgrow="ALWAYS" styleClass="orders-chart-container">
+                <Label text="Doanh thu 30 ngày" styleClass="orders-chart-title"/>
+                <LineChart fx:id="revenueChart" prefHeight="180" legendVisible="false">
+                    <xAxis>
+                        <CategoryAxis fx:id="revXAxis"/>
+                    </xAxis>
+                    <yAxis>
+                        <NumberAxis fx:id="revYAxis"/>
+                    </yAxis>
+                </LineChart>
+            </VBox>
+
+            <!-- Orders Chart -->
+            <VBox spacing="8" HBox.hgrow="ALWAYS" styleClass="orders-chart-container">
+                <Label text="S�' �'ơn hàng" styleClass="orders-chart-title"/>
+                <BarChart fx:id="ordersChart" prefHeight="180" legendVisible="false">
+                    <xAxis>
+                        <CategoryAxis fx:id="ordXAxis"/>
+                    </xAxis>
+                    <yAxis>
+                        <NumberAxis fx:id="ordYAxis"/>
+                    </yAxis>
+                </BarChart>
+            </VBox>
+        </HBox>
+
+        <!-- Main content: Orders Table + Detail -->
+        <HBox spacing="20" prefHeight="500">
+            <!-- Left: Orders List -->
+            <VBox spacing="14" HBox.hgrow="ALWAYS">
+                <!-- Filter bar -->
+                <VBox spacing="12" styleClass="orders-filter-card">
+                    <Label text="B�T lọc �'ơn hàng" styleClass="orders-filter-title"/>
+                    <HBox spacing="14" alignment="CENTER_LEFT">
+                        <VBox spacing="4">
+                            <Label text="Trạng thái" styleClass="orders-filter-label"/>
+                            <ComboBox fx:id="statusFilter" promptText="Tất cả" prefWidth="140" styleClass="orders-combo"/>
+                        </VBox>
+                        <VBox spacing="4">
+                            <Label text="Từ ngày" styleClass="orders-filter-label"/>
+                            <DatePicker fx:id="startDatePicker" prefWidth="140" styleClass="orders-datepicker"/>
+                        </VBox>
+                        <VBox spacing="4">
+                            <Label text="Đến ngày" styleClass="orders-filter-label"/>
+                            <DatePicker fx:id="endDatePicker" prefWidth="140" styleClass="orders-datepicker"/>
+                        </VBox>
+                        <Region HBox.hgrow="ALWAYS"/>
+                        <Button text="Xuất báo cáo" styleClass="orders-btn-export"/>
+                    </HBox>
+                </VBox>
+
+                <!-- Orders Table -->
+                <VBox styleClass="orders-table-card" VBox.vgrow="ALWAYS">
+                    <HBox alignment="CENTER_LEFT" spacing="12" styleClass="orders-table-header">
+                        <Label text="Danh sách �'ơn hàng" styleClass="orders-table-title"/>
+                        <Region HBox.hgrow="ALWAYS"/>
+                        <Label fx:id="countLabel" text="127 �'ơn hàng" styleClass="orders-count-badge"/>
+                    </HBox>
+                    <TableView fx:id="ordersTable" VBox.vgrow="ALWAYS" styleClass="orders-table">
+                        <columns>
+                            <TableColumn fx:id="orderIdCol" text="Mí �'ơn" prefWidth="110"/>
+                            <TableColumn fx:id="userCol" text="Khách hàng" prefWidth="160"/>
+                            <TableColumn fx:id="amountCol" text="T�.ng tiền" prefWidth="110"/>
+                            <TableColumn fx:id="statusCol" text="Trạng thái" prefWidth="110"/>
+                            <TableColumn fx:id="createdCol" text="Ngày tạo" prefWidth="120"/>
+                        </columns>
+                    </TableView>
+                </VBox>
+            </VBox>
+
+            <!-- Right: Order Detail Panel -->
+            <VBox fx:id="detailPanel" spacing="16" prefWidth="320" styleClass="orders-detail-panel">
+                <VBox spacing="8" styleClass="orders-detail-header">
+                    <Label text="Chi tiết �'ơn hàng" styleClass="orders-detail-title"/>
+                    <Label fx:id="lblOrderId" text="Chọn m�Tt �'ơn hàng" styleClass="orders-detail-subtitle"/>
+                </VBox>
+
+                <!-- Customer info -->
+                <VBox spacing="8" styleClass="orders-detail-section">
+                    <Label text="Thông tin khách hàng" styleClass="orders-section-label"/>
+                    <HBox spacing="8">
+                        <Label text="Tên:" styleClass="orders-info-label"/>
+                        <Label fx:id="lblCustomer" text="-" styleClass="orders-info-value"/>
+                    </HBox>
+                </VBox>
+
+                <!-- Order summary -->
+                <VBox spacing="8" styleClass="orders-detail-section">
+                    <Label text="Tóm tắt �'ơn hàng" styleClass="orders-section-label"/>
+                    <HBox spacing="8">
+                        <Label text="T�.ng tiền:" styleClass="orders-info-label"/>
+                        <Label fx:id="lblTotal" text="-" styleClass="orders-info-value-highlight"/>
+                    </HBox>
+                    <HBox spacing="8">
+                        <Label text="Trạng thái:" styleClass="orders-info-label"/>
+                        <Label fx:id="lblStatus" text="-" styleClass="orders-status-badge"/>
+                    </HBox>
+                    <HBox spacing="8">
+                        <Label text="Ngày tạo:" styleClass="orders-info-label"/>
+                        <Label fx:id="lblDate" text="-" styleClass="orders-info-value"/>
+                    </HBox>
+                    <HBox spacing="8">
+                        <Label text="Coupon:" styleClass="orders-info-label"/>
+                        <Label fx:id="lblCoupon" text="-" styleClass="orders-coupon-badge"/>
+                    </HBox>
+                </VBox>
+
+                <!-- Courses in order -->
+                <VBox spacing="8" prefHeight="150" styleClass="orders-detail-section">
+                    <Label text="Khóa học trong �'ơn" styleClass="orders-section-label"/>
+                    <ListView fx:id="coursesList" prefHeight="120" styleClass="orders-courses-list"/>
+                </VBox>
+
+                <!-- Actions -->
+                <VBox spacing="10">
+                    <Button text="�Y"� Gửi email xác nhận" styleClass="orders-btn-email"/>
+                    <Button text="�Ys� Hủy �'ơn hàng" styleClass="orders-btn-cancel"/>
+                </VBox>
+            </VBox>
+        </HBox>
+    </VBox>
+</ScrollPane>
+

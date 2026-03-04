@@ -1,0 +1,69 @@
+.shell-root {
+    -fx-background-color: #020617;
+    -fx-padding: 16;
+}
+
+.shell-sidebar {
+    -fx-background-color: #020617;
+    -fx-padding: 20 16 20 16;
+    -fx-spacing: 10;
+}
+
+.shell-logo {
+    -fx-text-fill: #e5e7eb;
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+}
+
+.shell-nav-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: #e2e8f0;
+    -fx-font-size: 14px;
+    -fx-font-weight: 600;
+    -fx-alignment: CENTER_LEFT;
+    -fx-padding: 10 14 10 14;
+    -fx-background-radius: 999;
+}
+
+.shell-nav-button:hover {
+    -fx-background-color: #111827;
+    -fx-text-fill: #f9fafb;
+}
+
+/* trạng thái đang được chọn (tím sáng phía sau text) */
+.shell-nav-button-active {
+    -fx-background-color: linear-gradient(to right, #6d28d9, #7c3aed);
+    -fx-text-fill: #f9fafb;
+    -fx-background-radius: 999;
+    -fx-padding: 8 12 8 12;
+    -fx-effect: dropshadow(gaussian, rgba(109,40,217,0.6), 18, 0.3, 0, 6);
+}
+
+.shell-header {
+    -fx-background-color: #020617;
+    -fx-padding: 10 20 10 20;
+    -fx-border-color: #111827;
+    -fx-border-width: 0 0 1 0;
+}
+
+.shell-search {
+    -fx-background-radius: 999;
+    -fx-background-color: #020617;
+    -fx-border-radius: 999;
+    -fx-border-color: #4b5563;
+    -fx-text-fill: #e5e7eb;
+    -fx-prompt-text-fill: #6b7280;
+    -fx-padding: 6 12 6 12;
+}
+
+.shell-header-button {
+    -fx-background-color: #111827;
+    -fx-text-fill: #e5e7eb;
+    -fx-background-radius: 999;
+    -fx-padding: 6 12 6 12;
+}
+
+.shell-user-label {
+    -fx-text-fill: #e5e7eb;
+}
+

@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<!--
+  Courses List - Modern Dark Theme
+-->
+<StackPane xmlns:fx="http://javafx.com/fxml"
+           fx:controller="com.elearning.admin.controllers.CoursesController"
+           styleClass="dashboard-root">
+
+    <!-- List view (default) -->
+    <VBox fx:id="listView" spacing="20" VBox.vgrow="ALWAYS">
+
+        <!-- Header Section -->
+        <HBox spacing="16" alignment="CENTER_LEFT" styleClass="courses-header">
+            <VBox spacing="4" HBox.hgrow="ALWAYS">
+                <Label text="Quản lý khóa học" styleClass="courses-page-title"/>
+                <Label text="Xem, chỉnh sửa và quản lý tất cả khóa học trong hệ thống" styleClass="courses-page-subtitle"/>
+            </VBox>
+            <Button text="+ Thêm khóa học"
+                    onAction="#onAddCourseClicked"
+                    styleClass="courses-btn-add"/>
+        </HBox>
+
+        <!-- Filter bar wrapped in card -->
+        <VBox styleClass="courses-filter-card" spacing="12">
+            <Label text="Bộ lọc" styleClass="courses-filter-title"/>
+            <HBox spacing="14" alignment="CENTER_LEFT">
+                <VBox spacing="4">
+                    <Label text="Tìm kiếm" styleClass="courses-filter-label"/>
+                    <TextField fx:id="searchField"
+                               promptText="Nhập tên khóa học..."
+                               prefWidth="240"
+                               styleClass="courses-search-field"/>
+                </VBox>
+                <VBox spacing="4">
+                    <Label text="Danh mục" styleClass="courses-filter-label"/>
+                    <ComboBox fx:id="categoryFilter"
+                              promptText="Tất cả"
+                              prefWidth="160"
+                              styleClass="courses-combo"/>
+                </VBox>
+                <VBox spacing="4">
+                    <Label text="Trạng thái" styleClass="courses-filter-label"/>
+                    <ComboBox fx:id="statusFilter"
+                              promptText="Tất cả"
+                              prefWidth="140"
+                              styleClass="courses-combo"/>
+                </VBox>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Button text="Xóa bộ lọc" styleClass="courses-btn-clear"/>
+            </HBox>
+        </VBox>
+
+        <!-- Table wrapped in card -->
+        <VBox styleClass="courses-table-card" spacing="12" VBox.vgrow="ALWAYS">
+            <HBox alignment="CENTER_LEFT" spacing="12">
+                <Label text="Danh sách khóa học" styleClass="courses-table-title"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Label fx:id="countLabel" text="6 khóa học" styleClass="courses-count-badge"/>
+            </HBox>
+
+            <TableView fx:id="coursesTable"
+                       prefHeight="320"
+                       VBox.vgrow="ALWAYS"
+                       styleClass="courses-table">
+                <columns>
+                    <TableColumn fx:id="titleCol" text="Tên khóa học" prefWidth="220"/>
+                    <TableColumn fx:id="categoryCol" text="Danh mục" prefWidth="120"/>
+                    <TableColumn fx:id="instructorCol" text="Giảng viên" prefWidth="150"/>
+                    <TableColumn fx:id="priceCol" text="Giá" prefWidth="100"/>
+                    <TableColumn fx:id="statusCol" text="Trạng thái" prefWidth="110"/>
+                    <TableColumn fx:id="createdAtCol" text="Ngày tạo" prefWidth="110"/>
+                </columns>
+            </TableView>
+
+            <!-- Action buttons -->
+            <HBox spacing="12" alignment="CENTER_LEFT" styleClass="courses-actions">
+                <Button text="[i] Xem chi tiết" onAction="#onViewDetailClicked" styleClass="courses-btn-primary"/>
+                <Button text="[edit] Chỉnh sửa" onAction="#onEditClicked" styleClass="courses-btn-secondary"/>
+                <Button text="[archive] Lưu trữ" onAction="#onArchiveClicked" styleClass="courses-btn-danger"/>
+            </HBox>
+        </VBox>
+    </VBox>
+
+    <!-- Detail view container -->
+    <StackPane fx:id="detailContainer" visible="false" managed="false" StackPane.alignment="CENTER"/>
+</StackPane>

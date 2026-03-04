@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<!--
+  Enrollments & Progress Management
+  - Left: Enrollments table
+  - Right: Detail panel with lesson progress
+-->
+<ScrollPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.elearning.admin.controllers.EnrollmentsController"
+            fitToWidth="true" styleClass="scroll-pane-clean">
+    <VBox spacing="20" styleClass="dashboard-root">
+
+        <!-- Header -->
+        <HBox spacing="16" alignment="CENTER_LEFT" styleClass="enrollments-header">
+            <VBox spacing="4" HBox.hgrow="ALWAYS">
+                <Label text="Quản lý Đ�fng ký &amp; Tiến �'�T" styleClass="enrollments-page-title"/>
+                <Label text="Theo dõi tiến �'�T học tập của học viên" styleClass="enrollments-page-subtitle"/>
+            </VBox>
+        </HBox>
+
+        <!-- Stats Cards -->
+        <HBox spacing="16">
+            <VBox styleClass="enrollments-stat-card enrollments-stat-total" HBox.hgrow="ALWAYS">
+                <Label text="T�"NG Đ�,NG KÝ" styleClass="enrollments-stat-label"/>
+                <Label text="1,247" styleClass="enrollments-stat-value"/>
+                <Label text="Tất cả thời gian" styleClass="enrollments-stat-sub"/>
+            </VBox>
+            <VBox styleClass="enrollments-stat-card enrollments-stat-active" HBox.hgrow="ALWAYS">
+                <Label text="ĐANG H�OC" styleClass="enrollments-stat-label"/>
+                <Label text="892" styleClass="enrollments-stat-value"/>
+                <Label text="71.5% �'ang active" styleClass="enrollments-stat-sub"/>
+            </VBox>
+            <VBox styleClass="enrollments-stat-card enrollments-stat-completed" HBox.hgrow="ALWAYS">
+                <Label text="Đ�f HO�•N TH�•NH" styleClass="enrollments-stat-label"/>
+                <Label text="355" styleClass="enrollments-stat-value"/>
+                <Label text="28.5% hoàn thành" styleClass="enrollments-stat-sub"/>
+            </VBox>
+        </HBox>
+
+        <!-- Filter Bar -->
+        <HBox spacing="16" alignment="CENTER_LEFT" styleClass="enrollments-filter-bar">
+            <VBox spacing="4">
+                <Label text="Khóa học" styleClass="enrollments-filter-label"/>
+                <ComboBox fx:id="courseFilter" promptText="Tất cả" prefWidth="200" styleClass="enrollments-combo"/>
+            </VBox>
+            <VBox spacing="4">
+                <Label text="Trạng thái" styleClass="enrollments-filter-label"/>
+                <ComboBox fx:id="statusFilter" promptText="Tất cả" prefWidth="140" styleClass="enrollments-combo"/>
+            </VBox>
+            <VBox spacing="4">
+                <Label text="Tiến �'�T" styleClass="enrollments-filter-label"/>
+                <ComboBox fx:id="progressFilter" promptText="Tất cả" prefWidth="140" styleClass="enrollments-combo"/>
+            </VBox>
+            <Region HBox.hgrow="ALWAYS"/>
+            <TextField fx:id="searchField" promptText="�Y"� Tìm học viên..." prefWidth="200" styleClass="enrollments-search"/>
+        </HBox>
+
+        <!-- Main Content: Table + Detail Panel -->
+        <HBox spacing="20" prefHeight="600">
+            <!-- Left: Enrollments Table -->
+            <VBox spacing="14" HBox.hgrow="ALWAYS">
+                <VBox styleClass="enrollments-table-card" VBox.vgrow="ALWAYS">
+                    <HBox alignment="CENTER_LEFT" spacing="12" styleClass="enrollments-table-header">
+                        <Label text="Danh sách �'�fng ký" styleClass="enrollments-table-title"/>
+                        <Region HBox.hgrow="ALWAYS"/>
+                        <Label fx:id="countLabel" text="1,247 �'�fng ký" styleClass="enrollments-count-badge"/>
+                    </HBox>
+                    <TableView fx:id="enrollmentsTable" VBox.vgrow="ALWAYS" styleClass="enrollments-table">
+                        <columns>
+                            <TableColumn fx:id="userCol" text="Học viên" prefWidth="160"/>
+                            <TableColumn fx:id="courseCol" text="Khóa học" prefWidth="240"/>
+                            <TableColumn fx:id="progressCol" text="Tiến �'�T" prefWidth="140"/>
+                            <TableColumn fx:id="statusCol" text="Trạng thái" prefWidth="110"/>
+                            <TableColumn fx:id="enrolledCol" text="Ngày �'�fng ký" prefWidth="120"/>
+                        </columns>
+                    </TableView>
+                </VBox>
+            </VBox>
+
+            <!-- Right: Progress Detail Panel -->
+            <VBox fx:id="detailPanel" spacing="16" prefWidth="380" styleClass="enrollments-detail-panel">
+                <VBox spacing="8" styleClass="enrollments-detail-header">
+                    <Label text="Chi tiết tiến �'�T học tập" styleClass="enrollments-detail-title"/>
+                    <Label fx:id="lblStudent" text="Chọn m�Tt �'�fng ký" styleClass="enrollments-detail-subtitle"/>
+                </VBox>
+
+                <!-- Course Info -->
+                <VBox spacing="10" styleClass="enrollments-course-info">
+                    <Label fx:id="lblCourse" text="-" styleClass="enrollments-course-name"/>
+                    <HBox spacing="8" alignment="CENTER_LEFT">
+                        <Label text="Trạng thái:" styleClass="enrollments-info-label"/>
+                        <Label fx:id="lblStatus" text="-" styleClass="enrollments-status-badge"/>
+                    </HBox>
+                    <VBox spacing="4">
+                        <HBox spacing="8" alignment="CENTER_LEFT">
+                            <Label text="Tiến �'�T:" styleClass="enrollments-info-label"/>
+                            <Label fx:id="lblProgress" text="0%" styleClass="enrollments-progress-text"/>
+                        </HBox>
+                        <ProgressBar fx:id="progressBar" prefWidth="320" prefHeight="8" styleClass="enrollments-progress-bar"/>
+                    </VBox>
+                    <HBox spacing="16">
+                        <VBox spacing="4" HBox.hgrow="ALWAYS">
+                            <Label text="Ngày �'�fng ký" styleClass="enrollments-meta-label"/>
+                            <Label fx:id="lblEnrolled" text="-" styleClass="enrollments-meta-value"/>
+                        </VBox>
+                        <VBox spacing="4" HBox.hgrow="ALWAYS">
+                            <Label text="Cập nhật gần �'ây" styleClass="enrollments-meta-label"/>
+                            <Label fx:id="lblLastActivity" text="-" styleClass="enrollments-meta-value"/>
+                        </VBox>
+                    </HBox>
+                </VBox>
+
+                <!-- Lesson Progress Section -->
+                <VBox spacing="12" VBox.vgrow="ALWAYS" styleClass="enrollments-lessons-section">
+                    <HBox spacing="8" alignment="CENTER_LEFT">
+                        <Label text="Bài học �'í hoàn thành" styleClass="enrollments-section-title"/>
+                        <Label fx:id="lblLessonCount" text="0/0" styleClass="enrollments-lesson-count-badge"/>
+                    </HBox>
+                    
+                    <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS" styleClass="scroll-pane-clean">
+                        <VBox fx:id="lessonsContainer" spacing="8" styleClass="enrollments-lessons-list">
+                            <!-- Lesson items will be added here dynamically -->
+                            <Label text="Chọn m�Tt �'�fng ký �'�f xem chi tiết bài học" 
+                                   wrapText="true" styleClass="enrollments-empty-message"/>
+                        </VBox>
+                    </ScrollPane>
+                </VBox>
+
+                <!-- Action Buttons -->
+                <VBox spacing="10">
+                    <Button text="�Y"S Xem báo cáo chi tiết" styleClass="enrollments-btn-report"/>
+                    <Button text="�o•️ Gửi thông báo nhắc nh�Y" styleClass="enrollments-btn-notify"/>
+                </VBox>
+            </VBox>
+        </HBox>
+    </VBox>
+</ScrollPane>
+

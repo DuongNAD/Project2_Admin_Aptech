@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<!--
+  Categories Management
+  - Left: Categories list with table
+  - Right: Form to add/edit category
+-->
+<ScrollPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.elearning.admin.controllers.CategoriesController"
+            fitToWidth="true" styleClass="scroll-pane-clean">
+    <VBox spacing="20" styleClass="dashboard-root">
+
+        <!-- Header -->
+        <HBox spacing="16" alignment="CENTER_LEFT" styleClass="categories-header">
+            <VBox spacing="4" HBox.hgrow="ALWAYS">
+                <Label text="Danh mục khóa học" styleClass="categories-page-title"/>
+                <Label text="Quản lý các danh mục và phân loại khóa học" styleClass="categories-page-subtitle"/>
+            </VBox>
+        </HBox>
+
+        <!-- Main Content: Table + Form -->
+        <HBox spacing="20" prefHeight="600">
+            <!-- Left: Categories Table -->
+            <VBox spacing="14" HBox.hgrow="ALWAYS">
+                <VBox styleClass="categories-table-card" VBox.vgrow="ALWAYS">
+                    <HBox alignment="CENTER_LEFT" spacing="12" styleClass="categories-table-header">
+                        <Label text="Tất cả danh mục" styleClass="categories-table-title"/>
+                        <Region HBox.hgrow="ALWAYS"/>
+                        <Label fx:id="countLabel" text="12 danh mục" styleClass="categories-count-badge"/>
+                    </HBox>
+                    <TableView fx:id="categoriesTable" VBox.vgrow="ALWAYS" styleClass="categories-table">
+                        <columns>
+                            <TableColumn fx:id="nameCol" text="Tên danh mục" prefWidth="200"/>
+                            <TableColumn fx:id="descriptionCol" text="Mô tả" prefWidth="320"/>
+                            <TableColumn fx:id="coursesCountCol" text="Số khóa học" prefWidth="120"/>
+                            <TableColumn fx:id="actionsCol" text="" prefWidth="100"/>
+                        </columns>
+                    </TableView>
+                </VBox>
+            </VBox>
+
+            <!-- Right: Form Panel -->
+            <VBox spacing="16" prefWidth="360" styleClass="categories-form-panel">
+                <VBox spacing="8" styleClass="categories-form-header">
+                    <Label fx:id="formTitle" text="Thêm danh mục mới" styleClass="categories-form-title"/>
+                    <Label text="Điền thông tin bên dưới" styleClass="categories-form-subtitle"/>
+                </VBox>
+
+                <!-- Form Fields -->
+                <VBox spacing="16" styleClass="categories-form-body">
+                    <VBox spacing="8">
+                        <Label text="Tên danh mục *" styleClass="categories-field-label"/>
+                        <TextField fx:id="nameField" promptText="Ví dụ: Programming" styleClass="categories-field"/>
+                    </VBox>
+
+                    <VBox spacing="8">
+                        <Label text="Mô tả" styleClass="categories-field-label"/>
+                        <TextArea fx:id="descriptionField" promptText="Mô tả ngắn về danh mục..." 
+                                  prefRowCount="4" wrapText="true" styleClass="categories-textarea"/>
+                    </VBox>
+
+                    <VBox spacing="8">
+                        <Label text="Icon/Slug (tùy chọn)" styleClass="categories-field-label"/>
+                        <TextField fx:id="slugField" promptText="programming" styleClass="categories-field"/>
+                    </VBox>
+                </VBox>
+
+                <!-- Action Buttons -->
+                <VBox spacing="10" styleClass="categories-form-actions">
+                    <Button fx:id="btnSave" text="Lưu danh mục" onAction="#handleSave" styleClass="categories-btn-save"/>
+                    <Button fx:id="btnCancel" text="Hủy" onAction="#handleCancel" styleClass="categories-btn-cancel"/>
+                </VBox>
+
+                <!-- Info Box -->
+                <VBox spacing="8" styleClass="categories-info-box">
+                    <Label text="Lưu ý" styleClass="categories-info-title"/>
+                    <Label text="• Tên danh mục không được để trống&#10;• Mỗi danh mục có thể chứa nhiều khóa học&#10;• Xóa danh mục sẽ ảnh hưởng đến các khóa học liên quan" 
+                           wrapText="true" styleClass="categories-info-text"/>
+                </VBox>
+            </VBox>
+        </HBox>
+    </VBox>
+</ScrollPane>

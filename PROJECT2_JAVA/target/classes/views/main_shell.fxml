@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<!--
+  Main admin shell:
+  - Left: sidebar
+  - Top: header
+  - Center: content area (Dashboard by default)
+-->
+<BorderPane fx:id="rootPane"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.elearning.admin.controllers.MainShellController"
+            styleClass="shell-root">
+
+    <!-- Sidebar -->
+    <left>
+        <VBox spacing="10"
+              prefWidth="220"
+              styleClass="shell-sidebar">
+            <children>
+                <Label text="Elearning Admin"
+                       styleClass="shell-logo"/>
+
+                <Separator/>
+
+                <Button fx:id="dashboardButton"
+                        text="Dashboard"
+                        onAction="#onDashboardClicked"
+                        maxWidth="Infinity"
+                        styleClass="shell-nav-button"/>
+                <Button fx:id="coursesButton"
+                        text="Courses"
+                        onAction="#onCoursesClicked"
+                        maxWidth="Infinity"
+                        styleClass="shell-nav-button"/>
+                <Button fx:id="usersButton"
+                        text="Users"
+                        onAction="#onUsersClicked"
+                        maxWidth="Infinity"
+                        styleClass="shell-nav-button"/>
+                <Button fx:id="ordersButton"
+                        text="Orders"
+                        onAction="#onOrdersClicked"
+                        maxWidth="Infinity"
+                        styleClass="shell-nav-button"/>
+                <Button fx:id="categoriesButton"
+                        text="Categories"
+                        onAction="#onCategoriesClicked"
+                        maxWidth="Infinity"
+                        styleClass="shell-nav-button"/>
+                <Button fx:id="couponsButton"
+                        text="Coupons"
+                        onAction="#onCouponsClicked"
+                        maxWidth="Infinity"
+                        styleClass="shell-nav-button"/>
+                <Button fx:id="enrollmentsButton"
+                        text="Enrollments"
+                        onAction="#onEnrollmentsClicked"
+                        maxWidth="Infinity"
+                        styleClass="shell-nav-button"/>
+                <Button fx:id="reviewsButton"
+                        text="Reviews"
+                        onAction="#onReviewsClicked"
+                        maxWidth="Infinity"
+                        styleClass="shell-nav-button"/>
+                <Button fx:id="discussionsButton"
+                        text="Discussions"
+                        onAction="#onDiscussionsClicked"
+                        maxWidth="Infinity"
+                        styleClass="shell-nav-button"/>
+                <Button fx:id="certificatesButton"
+                        text="Certificates"
+                        onAction="#onCertificatesClicked"
+                        maxWidth="Infinity"
+                        styleClass="shell-nav-button"/>
+            </children>
+        </VBox>
+    </left>
+
+    <top>
+        <HBox spacing="12"
+              alignment="CENTER_RIGHT"
+              styleClass="shell-header">
+            <children>
+                <Button text="Thông báo"
+                        styleClass="shell-header-button"/>
+                <Label text="Admin"
+                       styleClass="shell-user-label"/>
+            </children>
+        </HBox>
+    </top>
+
+    <!-- Center: Dashboard mặc định -->
+    <center>
+        <StackPane>
+            <children>
+                <fx:include source="dashboard_view.fxml"/>
+            </children>
+        </StackPane>
+    </center>
+</BorderPane>

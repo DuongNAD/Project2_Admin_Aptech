@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<!--
+  Simple dark-style login screen.
+  Only frontend, no real authentication.
+-->
+<StackPane fx:id="root"
+          xmlns:fx="http://javafx.com/fxml"
+          fx:controller="com.elearning.admin.controllers.LoginViewController"
+          styleClass="root">
+
+    <children>
+        <BorderPane prefWidth="1000" prefHeight="650">
+            <center>
+                <StackPane>
+                    <children>
+                        <!-- Card ngang: bên trái mô tả, bên phải form, RỘNG CỐ ĐỊNH và luôn ở giữa -->
+                        <HBox spacing="40"
+                              alignment="CENTER"
+                              maxWidth="900"
+                              prefWidth="900"
+                              styleClass="login-card">
+
+                            <!-- Left side: app title / description -->
+                            <VBox spacing="12"
+                                  alignment="CENTER_LEFT"
+                                  prefWidth="360">
+                                <Label text="Elearning Admin"
+                                       styleClass="app-title"/>
+                                <Label text="Bảng điều khiển quản trị khóa học"
+                                       styleClass="subtitle"/>
+                                <Label text="Quản lý khóa học, học viên, đơn hàng và báo cáo trên một giao diện duy nhất."
+                                       wrapText="true"
+                                       maxWidth="320"
+                                       styleClass="subtitle"/>
+                            </VBox>
+
+                            <!-- Right side: login form -->
+                            <VBox spacing="14"
+                                  alignment="CENTER_LEFT"
+                                  prefWidth="320">
+
+                                <VBox spacing="6">
+                                    <Label text="Email" styleClass="field-label"/>
+                                    <TextField fx:id="emailField"
+                                               promptText="admin@example.com"
+                                               styleClass="text-input"/>
+                                </VBox>
+
+                                <VBox spacing="6">
+                                    <Label text="Mật khẩu" styleClass="field-label"/>
+                                    <PasswordField fx:id="passwordField"
+                                                   promptText="••••••••"
+                                                   styleClass="text-input"/>
+                                </VBox>
+
+                                <HBox spacing="8" alignment="CENTER_LEFT">
+                                    <CheckBox fx:id="rememberMeCheck"
+                                              text="Ghi nhớ đăng nhập"
+                                              styleClass="remember-check"/>
+                                </HBox>
+
+                                <Button text="Đăng nhập"
+                                        fx:id="loginButton"
+                                        onAction="#onLoginClicked"
+                                        maxWidth="Infinity"
+                                        styleClass="primary-button"/>
+
+                                <Label fx:id="errorLabel"
+                                       text=""
+                                       visible="false"
+                                       managed="false"
+                                       styleClass="error-label"/>
+
+                                <Label text="© 2026 Elearning Admin"
+                                       styleClass="footer-label"/>
+                            </VBox>
+
+                        </HBox>
+                    </children>
+                </StackPane>
+            </center>
+        </BorderPane>
+    </children>
+</StackPane>

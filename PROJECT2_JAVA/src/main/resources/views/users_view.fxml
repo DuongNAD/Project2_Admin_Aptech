@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.Circle?>
+
+<!--
+  Users Management - Modern Dark Theme
+  - Tabs: Students, Instructors, Admins
+  - TableView + Detail Panel
+  - Actions: View, Ban/Unban, Delete
+-->
+<VBox xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.elearning.admin.controllers.UsersController"
+      spacing="20" styleClass="dashboard-root">
+
+    <!-- Header -->
+    <HBox spacing="16" alignment="CENTER_LEFT" styleClass="users-header">
+        <VBox spacing="4" HBox.hgrow="ALWAYS">
+            <Label text="Quản lý người dùng" styleClass="users-page-title"/>
+            <Label text="Quản lý tất cả học viên, giảng viên và admin trong hệ thống" styleClass="users-page-subtitle"/>
+        </VBox>
+        <HBox spacing="10">
+            <TextField fx:id="searchField" promptText="Tìm kiếm người dùng..." prefWidth="220" styleClass="users-search"/>
+        </HBox>
+    </HBox>
+
+    <!-- Main content: Table + Detail Panel -->
+    <HBox spacing="20" VBox.vgrow="ALWAYS">
+
+        <!-- Left: Tabs + Table -->
+        <VBox spacing="0" HBox.hgrow="ALWAYS" styleClass="users-table-container">
+            <!-- Role Tabs -->
+            <HBox spacing="0" alignment="CENTER_LEFT" styleClass="users-tabs-bar">
+                <Button fx:id="tabAll" text="Tất cả" onAction="#onTabAllClicked" styleClass="users-tab users-tab-active"/>
+                <Button fx:id="tabStudents" text="Học viên" onAction="#onTabStudentsClicked" styleClass="users-tab"/>
+                <Button fx:id="tabInstructors" text="Giảng viên" onAction="#onTabInstructorsClicked" styleClass="users-tab"/>
+                <Button fx:id="tabAdmins" text="Admin" onAction="#onTabAdminsClicked" styleClass="users-tab"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Label fx:id="countLabel" text="12 người dùng" styleClass="users-count-badge"/>
+            </HBox>
+
+            <!-- Table -->
+            <TableView fx:id="usersTable" VBox.vgrow="ALWAYS" styleClass="users-table">
+                <columns>
+                    <TableColumn fx:id="avatarCol" text="" prefWidth="50"/>
+                    <TableColumn fx:id="nameCol" text="Họ tên" prefWidth="160"/>
+                    <TableColumn fx:id="emailCol" text="Email" prefWidth="200"/>
+                    <TableColumn fx:id="roleCol" text="Vai trò" prefWidth="100"/>
+                    <TableColumn fx:id="statusCol" text="Trạng thái" prefWidth="100"/>
+                    <TableColumn fx:id="createdCol" text="Ngày tham gia" prefWidth="120"/>
+                </columns>
+            </TableView>
+        </VBox>
+
+        <!-- Right: Detail Panel -->
+        <VBox fx:id="detailPanel" spacing="16" prefWidth="320" styleClass="users-detail-panel">
+            <!-- User info header -->
+            <VBox alignment="CENTER" spacing="8" styleClass="users-detail-header">
+                <StackPane styleClass="users-avatar-large">
+                    <Label fx:id="lblAvatarLetter" text="N" styleClass="users-avatar-letter-large"/>
+                </StackPane>
+                <Label fx:id="lblDetailName" text="Chọn một người dùng" styleClass="users-detail-name"/>
+                <Label fx:id="lblDetailEmail" text="" styleClass="users-detail-email"/>
+                <HBox spacing="8" alignment="CENTER">
+                    <Label fx:id="lblDetailRole" text="" styleClass="users-badge-role"/>
+                    <Label fx:id="lblDetailStatus" text="" styleClass="users-badge-status"/>
+                </HBox>
+            </VBox>
+
+            <!-- User stats -->
+            <VBox spacing="12" styleClass="users-detail-stats">
+                <Label text="Thông tin" styleClass="users-detail-section-title"/>
+                <HBox spacing="12">
+                    <VBox alignment="CENTER" styleClass="users-stat-box" HBox.hgrow="ALWAYS">
+                        <Label fx:id="lblCoursesCount" text="0" styleClass="users-stat-number"/>
+                        <Label text="Khóa học" styleClass="users-stat-label"/>
+                    </VBox>
+                    <VBox alignment="CENTER" styleClass="users-stat-box" HBox.hgrow="ALWAYS">
+                        <Label fx:id="lblEnrollDate" text="-" styleClass="users-stat-number"/>
+                        <Label text="Ngày tham gia" styleClass="users-stat-label"/>
+                    </VBox>
+                </HBox>
+            </VBox>
+
+            <!-- Courses list -->
+            <VBox spacing="8" VBox.vgrow="ALWAYS" styleClass="users-detail-courses">
+                <Label fx:id="lblCoursesTitle" text="Khóa học đã đăng ký" styleClass="users-detail-section-title"/>
+                <ListView fx:id="coursesList" VBox.vgrow="ALWAYS" styleClass="users-courses-list"/>
+            </VBox>
+
+            <!-- Action buttons -->
+            <VBox spacing="10" styleClass="users-detail-actions">
+                <Button fx:id="btnBan" text="Cấm người dùng" onAction="#onBanClicked" maxWidth="Infinity" styleClass="users-btn-ban"/>
+                <Button fx:id="btnDelete" text="Xóa vĩnh viễn" onAction="#onDeleteClicked" maxWidth="Infinity" styleClass="users-btn-delete"/>
+            </VBox>
+        </VBox>
+    </HBox>
+</VBox>

@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<!--
+  Discussions Management
+  - Filter: Course -> Section -> Lesson (cascading)
+  - Thread list of comments
+  - Action: delete violating comment
+-->
+<ScrollPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.elearning.admin.controllers.DiscussionsController"
+            fitToWidth="true" styleClass="scroll-pane-clean">
+    <VBox spacing="20" styleClass="dashboard-root">
+
+        <!-- Header -->
+        <HBox spacing="16" alignment="CENTER_LEFT" styleClass="discussions-header">
+            <VBox spacing="4" HBox.hgrow="ALWAYS">
+                <Label text="Thảo luận &amp; Bình luận" styleClass="discussions-page-title"/>
+                <Label text="Quản lý bình luận theo bài học, xóa nội dung vi phạm" styleClass="discussions-page-subtitle"/>
+            </VBox>
+        </HBox>
+
+        <!-- Filter: Course -> Section -> Lesson -->
+        <VBox spacing="12" styleClass="discussions-filter-card">
+            <Label text="Lọc theo bài học" styleClass="discussions-filter-title"/>
+            <HBox spacing="14" alignment="CENTER_LEFT">
+                <VBox spacing="4">
+                    <Label text="Khóa học" styleClass="discussions-filter-label"/>
+                    <ComboBox fx:id="courseFilter" promptText="Chọn khóa học" prefWidth="220" styleClass="discussions-combo"/>
+                </VBox>
+                <VBox spacing="4">
+                    <Label text="Chương / Section" styleClass="discussions-filter-label"/>
+                    <ComboBox fx:id="sectionFilter" promptText="Chọn section" prefWidth="200" styleClass="discussions-combo"/>
+                </VBox>
+                <VBox spacing="4">
+                    <Label text="Bài học" styleClass="discussions-filter-label"/>
+                    <ComboBox fx:id="lessonFilter" promptText="Chọn bài học" prefWidth="240" styleClass="discussions-combo"/>
+                </VBox>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Button text="Xóa bộ lọc" onAction="#clearFilters" styleClass="discussions-btn-clear"/>
+            </HBox>
+        </VBox>
+
+        <!-- Stats + Count -->
+        <HBox spacing="16" alignment="CENTER_LEFT">
+            <Label fx:id="countLabel" text="0 bình luận" styleClass="discussions-count-label"/>
+            <Label fx:id="contextLabel" text="Chọn khóa học và bài học để xem bình luận" styleClass="discussions-context-label"/>
+        </HBox>
+
+        <!-- Thread List -->
+        <VBox styleClass="discussions-thread-card" VBox.vgrow="ALWAYS">
+            <HBox alignment="CENTER_LEFT" spacing="12" styleClass="discussions-thread-header">
+                <Label text="Danh sách bình luận (dạng thread)" styleClass="discussions-thread-title"/>
+            </HBox>
+            <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS" styleClass="scroll-pane-clean">
+                <VBox fx:id="commentsContainer" spacing="10" styleClass="discussions-comments-list">
+                    <Label text="Chọn Khóa học -> Section -> Bài học để hiển thị bình luận" 
+                           wrapText="true" styleClass="discussions-empty-message"/>
+                </VBox>
+            </ScrollPane>
+        </VBox>
+    </VBox>
+</ScrollPane>
