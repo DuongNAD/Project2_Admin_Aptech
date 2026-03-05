@@ -11,7 +11,6 @@ import com.elearning.admin.dao.UserDAO;
 import java.util.List;
 import java.text.SimpleDateFormat;
 
-
 public class UsersController {
 
     @FXML
@@ -281,10 +280,17 @@ public class UsersController {
             if (response == ButtonType.OK) {
                 // Toggle status
                 String newStatus = selected.getStatus().equals("Active") ? "Banned" : "Active";
-                selected.setStatus(newStatus);
-                usersTable.refresh();
-                showUserDetail(selected);
-                showAlert("Đã " + action + " người dùng: " + selected.getName());
+
+                UserDAO dao = new UserDAO();
+                boolean success = dao.updateUserStatus(selected.getUserId(), newStatus);
+                if (success) {
+                    selected.setStatus(newStatus);
+                    usersTable.refresh();
+                    showUserDetail(selected);
+                    showAlert("Đã " + action + " người dùng: " + selected.getName());
+                } else {
+                    showAlert("Có lỗi xảy ra khi " + action + " người dùng này.");
+                }
             }
         });
     }
@@ -304,11 +310,16 @@ public class UsersController {
         confirm.showAndWait().ifPresent(response -> {
             if (response == ButtonType.OK) {
                 UserDAO dao = new UserDAO();
-                dao.deleteUser(selected.getUserId());
-                allUsers.remove(selected);
-                clearDetailPanel();
-                updateCount();
-                showAlert("Đã xóa người dùng: " + selected.getName());
+                boolean success = dao.deleteUser(selected.getUserId());
+                if (success) {
+                    allUsers.remove(selected);
+                    clearDetailPanel();
+                    updateCount();
+                    showAlert("Đã xóa người dùng: " + selected.getName());
+                } else {
+                    showAlert(
+                            "Không thể xóa người dùng này! Có thể người dùng đã có liên kết khóa học hoặc dữ liệu quan trọng.");
+                }
             }
         });
     }

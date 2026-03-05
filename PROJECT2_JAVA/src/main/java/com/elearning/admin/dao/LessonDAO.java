@@ -34,7 +34,7 @@ public class LessonDAO {
 
                     l.setOrderIndex(rs.getInt("order_index"));
                     l.setPreview(rs.getBoolean("is_preview"));
-                    l.setCreatedAt(rs.getTimestamp("created_at"));
+                    l.setContentType(rs.getString("content_type"));
                     list.add(l);
                 }
             }
@@ -45,22 +45,23 @@ public class LessonDAO {
     }
 
     public boolean insert(Lesson lesson) {
-        String sql = "INSERT INTO lessons (section_id, title, content, video_url, duration_seconds, order_index, is_preview) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO lessons (section_id, title, content, content_type, video_url, duration_seconds, order_index, is_preview) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         try (Connection conn = DatabaseConnect.getConnection();
                 PreparedStatement stmt = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
             stmt.setInt(1, lesson.getSectionId());
             stmt.setString(2, lesson.getTitle());
             stmt.setString(3, lesson.getContent());
-            stmt.setString(4, lesson.getVideoUrl());
+            stmt.setString(4, lesson.getContentType() != null ? lesson.getContentType() : "video");
+            stmt.setString(5, lesson.getVideoUrl());
 
             if (lesson.getDurationSeconds() != null) {
-                stmt.setInt(5, lesson.getDurationSeconds());
+                stmt.setInt(6, lesson.getDurationSeconds());
             } else {
-                stmt.setNull(5, java.sql.Types.INTEGER);
+                stmt.setNull(6, java.sql.Types.INTEGER);
             }
 
-            stmt.setInt(6, lesson.getOrderIndex());
-            stmt.setBoolean(7, lesson.isPreview());
+            stmt.setInt(7, lesson.getOrderIndex());
+            stmt.setBoolean(8, lesson.isPreview());
 
             int affectedRows = stmt.executeUpdate();
             if (affectedRows > 0) {
@@ -78,22 +79,23 @@ public class LessonDAO {
     }
 
     public boolean update(Lesson lesson) {
-        String sql = "UPDATE lessons SET title = ?, content = ?, video_url = ?, duration_seconds = ?, order_index = ?, is_preview = ? WHERE lesson_id = ?";
+        String sql = "UPDATE lessons SET title = ?, content = ?, content_type = ?, video_url = ?, duration_seconds = ?, order_index = ?, is_preview = ? WHERE lesson_id = ?";
         try (Connection conn = DatabaseConnect.getConnection();
                 PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, lesson.getTitle());
             stmt.setString(2, lesson.getContent());
-            stmt.setString(3, lesson.getVideoUrl());
+            stmt.setString(3, lesson.getContentType() != null ? lesson.getContentType() : "video");
+            stmt.setString(4, lesson.getVideoUrl());
 
             if (lesson.getDurationSeconds() != null) {
-                stmt.setInt(4, lesson.getDurationSeconds());
+                stmt.setInt(5, lesson.getDurationSeconds());
             } else {
-                stmt.setNull(4, java.sql.Types.INTEGER);
+                stmt.setNull(5, java.sql.Types.INTEGER);
             }
 
-            stmt.setInt(5, lesson.getOrderIndex());
-            stmt.setBoolean(6, lesson.isPreview());
-            stmt.setInt(7, lesson.getLessonId());
+            stmt.setInt(6, lesson.getOrderIndex());
+            stmt.setBoolean(7, lesson.isPreview());
+            stmt.setInt(8, lesson.getLessonId());
 
             return stmt.executeUpdate() > 0;
         } catch (SQLException e) {

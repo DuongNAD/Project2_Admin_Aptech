@@ -29,9 +29,6 @@ public class MainShellController {
     private Button categoriesButton;
 
     @FXML
-    private Button couponsButton;
-
-    @FXML
     private Button enrollmentsButton;
 
     @FXML
@@ -77,12 +74,6 @@ public class MainShellController {
     private void onCategoriesClicked() {
         setActiveNav(categoriesButton);
         loadCenter("/views/categories_view.fxml");
-    }
-
-    @FXML
-    private void onCouponsClicked() {
-        setActiveNav(couponsButton);
-        loadCenter("/views/coupons_view.fxml");
     }
 
     @FXML
@@ -133,7 +124,7 @@ public class MainShellController {
     private void setActiveNav(Button active) {
         Button[] buttons = {
                 dashboardButton, coursesButton, usersButton, ordersButton,
-                categoriesButton, couponsButton, enrollmentsButton,
+                categoriesButton, enrollmentsButton,
                 reviewsButton, discussionsButton, certificatesButton
         };
         for (Button b : buttons) {

@@ -50,7 +50,7 @@
                               styleClass="courses-combo"/>
                 </VBox>
                 <Region HBox.hgrow="ALWAYS"/>
-                <Button text="Xóa bộ lọc" styleClass="courses-btn-clear"/>
+                <Button text="Xóa bộ lọc" onAction="#onClearFilterClicked" styleClass="courses-btn-clear"/>
             </HBox>
         </VBox>
 
@@ -78,9 +78,9 @@
 
             <!-- Action buttons -->
             <HBox spacing="12" alignment="CENTER_LEFT" styleClass="courses-actions">
-                <Button text="[i] Xem chi tiết" onAction="#onViewDetailClicked" styleClass="courses-btn-primary"/>
-                <Button text="[edit] Chỉnh sửa" onAction="#onEditClicked" styleClass="courses-btn-secondary"/>
-                <Button text="[archive] Lưu trữ" onAction="#onArchiveClicked" styleClass="courses-btn-danger"/>
+                <Button text="Xem chi tiết" onAction="#onViewDetailClicked" styleClass="courses-btn-primary"/>
+                <Button text="Chỉnh sửa" onAction="#onEditClicked" styleClass="courses-btn-secondary"/>
+                <Button text="Xóa" onAction="#onArchiveClicked" styleClass="courses-btn-danger"/>
             </HBox>
         </VBox>
     </VBox>

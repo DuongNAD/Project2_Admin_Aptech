@@ -43,4 +43,51 @@ public class DiscussionDAO {
         public String userName;
         public String lessonTitle;
     }
+
+    public List<DiscussionDTO> getByLessonId(int lessonId) {
+        List<DiscussionDTO> list = new ArrayList<>();
+        String sql = "SELECT d.*, u.full_name as user_name, l.title as lesson_title " +
+                "FROM discussions d " +
+                "JOIN users u ON d.user_id = u.user_id " +
+                "JOIN lessons l ON d.lesson_id = l.lesson_id " +
+                "WHERE d.lesson_id = ? " +
+                "ORDER BY d.created_at DESC";
+        try (Connection conn = DatabaseConnect.getConnection();
+                PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, lessonId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    DiscussionDTO dto = new DiscussionDTO();
+                    Discussion d = new Discussion();
+                    d.setDiscussionId(rs.getInt("discussion_id"));
+                    d.setContent(rs.getString("content"));
+                    d.setCreatedAt(rs.getTimestamp("created_at"));
+                    // Depth logic is based on parent_id existence
+                    int parentId = rs.getInt("parent_id");
+                    if (!rs.wasNull()) {
+                        d.setParentId(parentId);
+                    }
+                    dto.discussion = d;
+                    dto.userName = rs.getString("user_name");
+                    dto.lessonTitle = rs.getString("lesson_title");
+                    list.add(dto);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+    public boolean delete(int discussionId) {
+        String sql = "DELETE FROM discussions WHERE discussion_id = ?";
+        try (Connection conn = DatabaseConnect.getConnection();
+                PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, discussionId);
+            return stmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
 }

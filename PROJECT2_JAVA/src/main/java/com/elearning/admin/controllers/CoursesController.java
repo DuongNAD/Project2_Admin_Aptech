@@ -81,11 +81,20 @@ public class CoursesController {
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 
         for (CourseDAO.CourseDTO c : courses) {
-            String createdAt = c.course.getCreatedAt() != null ? sdf.format(c.course.getCreatedAt())  : "N/A";
+            String createdAt = c.course.getCreatedAt() != null ? sdf.format(c.course.getCreatedAt()) : "N/A";
             String priceStr = c.course.getPrice() != null ? String.format("%,.0f đ", c.course.getPrice().doubleValue())
-                     : "0 đ";
+                    : "0 đ";
             String status = c.course.getStatus();
-            if (status != null && status.length() > 0)
+            // Normalize DB status to display labels
+            if (status == null)
+                status = "Draft";
+            else if (status.equalsIgnoreCase("active") || status.equalsIgnoreCase("published"))
+                status = "Published";
+            else if (status.equalsIgnoreCase("draft"))
+                status = "Draft";
+            else if (status.equalsIgnoreCase("archived"))
+                status = "Archived";
+            else
                 status = status.substring(0, 1).toUpperCase() + status.substring(1).toLowerCase();
 
             rows.add(new CourseRow(
@@ -104,13 +113,15 @@ public class CoursesController {
 
         List<com.elearning.admin.models.Category> cats = catDAO.getAll();
         ObservableList<String> catNames = FXCollections.observableArrayList();
-        catNames.add("All Categories");
+        catNames.add("Tất cả");
         for (com.elearning.admin.models.Category c : cats) {
             catNames.add(c.getName());
         }
         categoryFilter.setItems(catNames);
+        categoryFilter.setValue("Tất cả");
 
-        statusFilter.setItems(FXCollections.observableArrayList("All Status", "Published", "Draft", "Archived"));
+        statusFilter.setItems(FXCollections.observableArrayList("Tất cả", "Published", "Draft", "Archived"));
+        statusFilter.setValue("Tất cả");
     }
 
     private void setupFilters() {
@@ -120,9 +131,9 @@ public class CoursesController {
             String status = statusFilter.getValue();
             if (search != null && !search.isBlank() && !p.getTitle().toLowerCase().contains(search))
                 return false;
-            if (cat != null && !cat.equals("All Categories") && !cat.equals(p.getCategory()))
+            if (cat != null && !cat.equals("Tất cả") && !cat.equals(p.getCategory()))
                 return false;
-            if (status != null && !status.equals("All Status") && !status.equals(p.getStatus()))
+            if (status != null && !status.equals("Tất cả") && !status.equals(p.getStatus()))
                 return false;
             return true;
         };
@@ -150,6 +161,13 @@ public class CoursesController {
         coursesTable.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
     }
 
+    @FXML
+    private void onClearFilterClicked() {
+        searchField.clear();
+        categoryFilter.setValue("Tất cả");
+        statusFilter.setValue("Tất cả");
+    }
+
     /**
      * Thêm khóa học mới (demo, dữ liệu in-memory).
      * Mặc định tạo 1 khóa học Draft rồi mở màn chi tiết.
@@ -168,7 +186,7 @@ public class CoursesController {
         allCourses.add(0, newCourse);
         filteredCourses.setPredicate(filteredCourses.getPredicate()); // refresh filter
         coursesTable.getSelectionModel().select(newCourse);
-        showCourseDetail(newCourse, true);
+        showCourseDetail(newCourse, true, false);
     }
 
     @FXML
@@ -178,7 +196,7 @@ public class CoursesController {
             showAlert("Chọn một khóa học để xem chi tiết.");
             return;
         }
-        showCourseDetail(selected);
+        showCourseDetail(selected, false, true);
     }
 
     @FXML
@@ -188,24 +206,40 @@ public class CoursesController {
             showAlert("Chọn một khóa học để chỉnh sửa.");
             return;
         }
-        showAlert("Chỉnh sửa: " + selected.getTitle() + " (chức năng chưa kết nối API cập nhật)");
+        showCourseDetail(selected, false, false);
     }
 
     @FXML
     private void onArchiveClicked() {
         CourseRow selected = coursesTable.getSelectionModel().getSelectedItem();
         if (selected == null) {
-            showAlert("Chọn một khóa học để lưu trữ.");
+            showAlert("Chọn một khóa học để xóa.");
             return;
         }
-        showAlert("Lưu trữ: " + selected.getTitle() + " (chức năng chưa kết nối API cập nhật)");
+
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Xóa khóa học");
+        alert.setHeaderText("Xác nhận xóa khóa học");
+        alert.setContentText("Bạn có chắc chắn muốn xóa khóa học '" + selected.getTitle()
+                + "' không? Hành động này không thể hoàn tác.");
+
+        java.util.Optional<ButtonType> result = alert.showAndWait();
+        if (result.isPresent() && result.get() == ButtonType.OK) {
+            CourseDAO courseDAO = new CourseDAO();
+            if (courseDAO.delete(selected.getCourseId())) {
+                allCourses.remove(selected);
+                showAlert("Xóa thành công.");
+            } else {
+                showAlert("Không thể xóa khóa học. Có thể khóa học đang được sử dụng ở nơi khác.");
+            }
+        }
     }
 
     private void showCourseDetail(CourseRow course) {
-        showCourseDetail(course, false);
+        showCourseDetail(course, false, false);
     }
 
-    private void showCourseDetail(CourseRow course, boolean isNew) {
+    private void showCourseDetail(CourseRow course, boolean isNew, boolean isReadOnly) {
         try {
             FXMLLoader loader = new FXMLLoader(
                     getClass().getResource("/views/course_detail_view.fxml"));
@@ -214,6 +248,8 @@ public class CoursesController {
             CourseDetailController ctrl = loader.getController();
 
             ctrl.setNewCourse(isNew);
+            ctrl.setReadOnly(isReadOnly);
+            ctrl.setCourse(course);
             ctrl.setOnBack(this::showList);
             detailContainer.getChildren().clear();
             detailContainer.getChildren().add(detailView);
@@ -233,6 +269,7 @@ public class CoursesController {
         detailContainer.setManaged(false);
         listView.setVisible(true);
         listView.setManaged(true);
+        loadRealData();
     }
 
     private void showAlert(String msg) {

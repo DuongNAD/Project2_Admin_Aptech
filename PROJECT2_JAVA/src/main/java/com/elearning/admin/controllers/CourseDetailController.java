@@ -1,24 +1,33 @@
 package com.elearning.admin.controllers;
 
+import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.*;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.scene.web.HTMLEditor;
 
-import java.util.UUID;
-import java.util.WeakHashMap;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
 
-/**
- * Controller cho màn hình Chi tiết khóa học.
- * Thông tin chung + Tabs: Sections/Lessons, Enrollments, Reviews.
- */
+import com.elearning.admin.dao.CourseDAO;
+import com.elearning.admin.dao.SectionDAO;
+import com.elearning.admin.dao.LessonDAO;
+import com.elearning.admin.dao.CategoryDAO;
+import com.elearning.admin.dao.EnrollmentDAO;
+import com.elearning.admin.dao.ReviewDAO;
+import com.elearning.admin.models.Course;
+import com.elearning.admin.models.Section;
+import com.elearning.admin.models.Lesson;
+import com.elearning.admin.models.Category;
+import java.math.BigDecimal;
+
 public class CourseDetailController {
 
     @FXML
@@ -29,14 +38,22 @@ public class CourseDetailController {
     private TabPane detailTabs;
     @FXML
     private Label lessonsLabel;
-    // Builder UI
-    @FXML private ListView<Section> sectionsList;
-    @FXML private ListView<Lesson> lessonsList;
-    @FXML private Label selectedSectionLabel, editorStateLabel;
-    @FXML private TextField lessonTitleField, lessonDurationField;
-    @FXML private ComboBox<String> lessonTypeField;
-    @FXML private CheckBox lessonPreviewCheck;
-    @FXML private HTMLEditor lessonHtmlEditor;
+
+    @FXML
+    private ListView<SectionWrapper> sectionsList;
+    @FXML
+    private ListView<LessonWrapper> lessonsList;
+    @FXML
+    private Label selectedSectionLabel, editorStateLabel;
+    @FXML
+    private TextField lessonTitleField, lessonDurationField;
+    @FXML
+    private ComboBox<String> lessonTypeField;
+    @FXML
+    private CheckBox lessonPreviewCheck;
+    @FXML
+    private HTMLEditor lessonHtmlEditor;
+
     @FXML
     private TableView<EnrollmentRow> enrollmentsTable;
     @FXML
@@ -45,6 +62,7 @@ public class CourseDetailController {
     private TableColumn<EnrollmentRow, String> enrollDateCol;
     @FXML
     private TableColumn<EnrollmentRow, String> enrollProgressCol;
+
     @FXML
     private TableView<ReviewRow> reviewsTable;
     @FXML
@@ -57,21 +75,47 @@ public class CourseDetailController {
     private TableColumn<ReviewRow, String> reviewDateCol;
 
     private Runnable onBack;
-    private CoursesController.CourseRow course;
+    private CoursesController.CourseRow courseRow;
     private boolean newCourse;
+    private boolean readOnly;
 
-    // per-course in-memory builder data
-    private static final WeakHashMap<CoursesController.CourseRow, CourseContent> CONTENT = new WeakHashMap<>();
-    private CourseContent content;
-    private Lesson editingLesson;
+    private Course dbCourse;
+    private ObservableList<SectionWrapper> contentSections = FXCollections.observableArrayList();
+    private List<SectionWrapper> deletedSections = new ArrayList<>();
+    private List<LessonWrapper> deletedLessons = new ArrayList<>();
+    private LessonWrapper editingLesson;
+    private List<Category> allCategories;
 
     public void setCourse(CoursesController.CourseRow course) {
-        this.course = course;
+        this.courseRow = course;
         refresh();
     }
 
     public void setNewCourse(boolean isNew) {
         this.newCourse = isNew;
+    }
+
+    public void setReadOnly(boolean isReadOnly) {
+        this.readOnly = isReadOnly;
+
+        // Disable fields if read only (null-safe in case called early)
+        if (titleField != null)
+            titleField.setEditable(!readOnly);
+        if (subtitleField != null)
+            subtitleField.setEditable(!readOnly);
+        if (priceField != null)
+            priceField.setEditable(!readOnly);
+        if (languageField != null)
+            languageField.setEditable(!readOnly);
+        if (instructorField != null)
+            instructorField.setEditable(!readOnly);
+
+        if (categoryField != null)
+            categoryField.setDisable(readOnly);
+        if (statusField != null)
+            statusField.setDisable(readOnly);
+        if (levelField != null)
+            levelField.setDisable(readOnly);
     }
 
     public void setOnBack(Runnable r) {
@@ -80,23 +124,26 @@ public class CourseDetailController {
 
     @FXML
     private void initialize() {
-        // các lựa chọn mặc định cho combo
         levelField.setItems(FXCollections.observableArrayList("Beginner", "Intermediate", "Advanced"));
         statusField.setItems(FXCollections.observableArrayList("Draft", "Published", "Archived"));
-        categoryField.setItems(FXCollections.observableArrayList(
-                "Programming", "Backend", "Frontend", "Data", "Design"
-        ));
 
-        // lesson editor options
+        allCategories = new CategoryDAO().getAll();
+        ObservableList<String> catNames = FXCollections.observableArrayList();
+        for (Category c : allCategories) {
+            catNames.add(c.getName());
+        }
+        categoryField.setItems(catNames);
+
         if (lessonTypeField != null) {
-            lessonTypeField.setItems(FXCollections.observableArrayList("Video", "Article", "Quiz"));
+            lessonTypeField.setItems(FXCollections.observableArrayList("video", "article", "quiz"));
         }
 
         setupBuilderUI();
     }
 
     private void setupBuilderUI() {
-        if (sectionsList == null || lessonsList == null) return;
+        if (sectionsList == null || lessonsList == null)
+            return;
 
         sectionsList.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
             if (newVal != null) {
@@ -117,10 +164,9 @@ public class CourseDetailController {
             }
         });
 
-        // nicer rendering
         sectionsList.setCellFactory(lv -> new ListCell<>() {
             @Override
-            protected void updateItem(Section item, boolean empty) {
+            protected void updateItem(SectionWrapper item, boolean empty) {
                 super.updateItem(item, empty);
                 if (empty || item == null) {
                     setText(null);
@@ -135,53 +181,110 @@ public class CourseDetailController {
 
         lessonsList.setCellFactory(lv -> new ListCell<>() {
             @Override
-            protected void updateItem(Lesson item, boolean empty) {
+            protected void updateItem(LessonWrapper item, boolean empty) {
                 super.updateItem(item, empty);
                 if (empty || item == null) {
                     setText(null);
                     setGraphic(null);
                     return;
                 }
-                String type = item.type.get() == null ? "Video" : item.type.get();
-                String dur = item.duration.get() == null || item.duration.get().isBlank() ? "" : (" • " + item.duration.get() + "m");
+                String type = item.type.get() == null ? "video" : item.type.get();
+                String dur = item.duration.get() == null || item.duration.get().isBlank() ? ""
+                        : (" • " + item.duration.get() + "m");
                 String preview = item.preview.get() ? " • Free" : "";
                 setText(item.title.get() + "  [" + type + "]" + dur + preview);
                 getStyleClass().add("courses-builder-cell");
             }
         });
 
-        clearEditor();
+        // Defer clearEditor() so HTMLEditor WebKit is fully initialized first
+        Platform.runLater(this::clearEditor);
     }
 
     private void refresh() {
-        if (course == null) return;
+        if (courseRow == null)
+            return;
 
-        // attach or create content
-        content = CONTENT.computeIfAbsent(course, c -> CourseContent.createDefault());
+        dbCourse = new Course();
+        contentSections.clear();
+        deletedSections.clear();
+        deletedLessons.clear();
+
+        if (!newCourse && courseRow.getCourseId() > 0) {
+            CourseDAO courseDAO = new CourseDAO();
+            dbCourse = courseDAO.getById(courseRow.getCourseId());
+            if (dbCourse == null) {
+                dbCourse = new Course();
+                dbCourse.setCourseId(courseRow.getCourseId());
+            }
+
+            SectionDAO secDAO = new SectionDAO();
+            LessonDAO lesDAO = new LessonDAO();
+
+            List<Section> secs = secDAO.getSectionsByCourseId(dbCourse.getCourseId());
+            for (Section s : secs) {
+                SectionWrapper sw = new SectionWrapper(s);
+                List<Lesson> less = lesDAO.getLessonsBySectionId(s.getSectionId());
+                for (Lesson l : less) {
+                    sw.lessons.add(new LessonWrapper(l));
+                }
+                contentSections.add(sw);
+            }
+        }
+
         if (sectionsList != null) {
-            sectionsList.setItems(content.sections);
-            if (!content.sections.isEmpty()) {
+            sectionsList.setItems(contentSections);
+            if (!contentSections.isEmpty()) {
                 sectionsList.getSelectionModel().select(0);
             }
         }
 
-        // header fields
-        titleField.setText(course.getTitle());
-        subtitleField.setText("Khóa học " + course.getCategory() + " do " + course.instructorProperty().get() + " giảng dạy.");
+        if (dbCourse.getTitle() != null) {
+            titleField.setText(dbCourse.getTitle());
+        } else {
+            titleField.setText(courseRow.getTitle());
+        }
 
-        // basic info form
-        priceField.setText(course.priceProperty().get());
-        languageField.setText("Tiếng Việt");
-        instructorField.setText(course.instructorProperty().get());
-        categoryField.setValue(course.getCategory());
+        if (dbCourse.getSubtitle() != null) {
+            subtitleField.setText(dbCourse.getSubtitle());
+        } else {
+            subtitleField.setText(
+                    "Khóa học " + courseRow.getCategory() + " do " + courseRow.instructorProperty().get()
+                            + " giảng dạy.");
+        }
 
-        if (course.getStatus() != null) {
-            statusField.setValue(course.getStatus());
+        if (dbCourse.getPrice() != null) {
+            priceField.setText(String.format("%.0f", dbCourse.getPrice().doubleValue()));
+        } else {
+            String priceText = courseRow.priceProperty().get().replaceAll("[^0-9]", "");
+            if (priceText.isEmpty())
+                priceText = "0";
+            priceField.setText(priceText);
+        }
+
+        if (dbCourse.getLanguage() != null) {
+            languageField.setText(dbCourse.getLanguage());
+        } else {
+            languageField.setText("Vietnamese");
+        }
+        instructorField.setText(courseRow.instructorProperty().get());
+        categoryField.setValue(courseRow.getCategory());
+
+        if (dbCourse.getStatus() != null) {
+            statusField.setValue(dbCourse.getStatus().equalsIgnoreCase("active")
+                    || dbCourse.getStatus().equalsIgnoreCase("published") ? "Published" : "Draft");
+        } else if (courseRow.getStatus() != null) {
+            statusField.setValue(courseRow.getStatus().equalsIgnoreCase("active")
+                    || courseRow.getStatus().equalsIgnoreCase("published") ? "Published" : "Draft");
         } else {
             statusField.setValue("Draft");
         }
-        // tạm hard-code level
-        levelField.setValue("Beginner");
+
+        if (dbCourse.getLevel() != null) {
+            levelField.setValue(dbCourse.getLevel());
+        } else {
+            levelField.setValue("Beginner");
+        }
 
         loadEnrollments();
         loadReviews();
@@ -189,12 +292,13 @@ public class CourseDetailController {
     }
 
     private void updateLessonSummaryLabel() {
-        if (lessonsLabel == null || content == null) return;
-        int sectionCount = content.sections.size();
-        int lessonCount = content.sections.stream().mapToInt(s -> s.lessons.size()).sum();
+        if (lessonsLabel == null)
+            return;
+        int sectionCount = contentSections.size();
+        int lessonCount = contentSections.stream().mapToInt(s -> s.lessons.size()).sum();
         lessonsLabel.setText(sectionCount + " phần • " + lessonCount + " bài học");
-        // force refresh cells to update badges
-        if (sectionsList != null) sectionsList.refresh();
+        if (sectionsList != null)
+            sectionsList.refresh();
     }
 
     private void loadEnrollments() {
@@ -202,12 +306,19 @@ public class CourseDetailController {
         enrollDateCol.setCellValueFactory(c -> c.getValue().dateProperty());
         enrollProgressCol.setCellValueFactory(c -> c.getValue().progressProperty());
 
-        ObservableList<EnrollmentRow> rows = FXCollections.observableArrayList(
-                new EnrollmentRow("Nguyễn Văn An", "20/01/2025", "45%"),
-                new EnrollmentRow("Trần Thị Bình", "18/01/2025", "80%"),
-                new EnrollmentRow("Lê Văn Cường", "15/01/2025", "100%"),
-                new EnrollmentRow("Phạm Thị Dung", "22/01/2025", "12%")
-        );
+        ObservableList<EnrollmentRow> rows = FXCollections.observableArrayList();
+        if (dbCourse != null && dbCourse.getCourseId() > 0) {
+            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+            EnrollmentDAO enrDAO = new EnrollmentDAO();
+            List<EnrollmentDAO.EnrollmentDTO> enrList = enrDAO.getByCourseId(dbCourse.getCourseId());
+            for (EnrollmentDAO.EnrollmentDTO dto : enrList) {
+                String dateStr = dto.enrollment.getEnrolledAt() != null
+                        ? sdf.format(dto.enrollment.getEnrolledAt())
+                        : "N/A";
+                String progress = String.format("%.0f%%", dto.enrollment.getProgressPercent());
+                rows.add(new EnrollmentRow(dto.userName, dateStr, progress));
+            }
+        }
         enrollmentsTable.setItems(rows);
     }
 
@@ -217,31 +328,45 @@ public class CourseDetailController {
         reviewCommentCol.setCellValueFactory(c -> c.getValue().commentProperty());
         reviewDateCol.setCellValueFactory(c -> c.getValue().dateProperty());
 
-        ObservableList<ReviewRow> rows = FXCollections.observableArrayList(
-                new ReviewRow("Nguyễn Văn An", "5", "Khóa học rất hay, dễ hiểu!", "21/01/2025"),
-                new ReviewRow("Trần Thị Bình", "4", "Nội dung tốt, giá hợp lý.", "19/01/2025"),
-                new ReviewRow("Lê Văn Cường", "5", "Hoàn thành khóa, rất hài lòng.", "17/01/2025")
-        );
+        ObservableList<ReviewRow> rows = FXCollections.observableArrayList();
+        if (dbCourse != null && dbCourse.getCourseId() > 0) {
+            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+            ReviewDAO revDAO = new ReviewDAO();
+            List<ReviewDAO.ReviewDTO> revList = revDAO.getByCourseId(dbCourse.getCourseId());
+            for (ReviewDAO.ReviewDTO dto : revList) {
+                String dateStr = dto.review.getCreatedAt() != null
+                        ? sdf.format(dto.review.getCreatedAt())
+                        : "N/A";
+                String rating = String.valueOf(dto.review.getRating()) + " ⭐";
+                String comment = dto.review.getComment() != null ? dto.review.getComment() : "";
+                rows.add(new ReviewRow(dto.userName, rating, comment, dateStr));
+            }
+        }
         reviewsTable.setItems(rows);
     }
 
     @FXML
     private void onBackClicked() {
-        if (onBack != null) onBack.run();
+        if (onBack != null)
+            onBack.run();
     }
 
     @FXML
     private void onSaveClicked() {
-        if (course == null) return;
+        if (readOnly) {
+            showAlert("Chế độ xem", "Bạn đang ở chế độ xem chi tiết. Không thể lưu thay đổi.");
+            return;
+        }
+        if (courseRow == null)
+            return;
 
         String title = titleField.getText() == null ? "" : titleField.getText().trim();
         String subtitle = subtitleField.getText() == null ? "" : subtitleField.getText().trim();
-        String price = priceField.getText() == null ? "" : priceField.getText().trim();
-        String language = languageField.getText() == null ? "" : languageField.getText().trim();
-        String instructor = instructorField.getText() == null ? "" : instructorField.getText().trim();
+        String priceStr = priceField.getText() == null ? "0" : priceField.getText().trim().replaceAll("[^0-9]", "");
+        String language = languageField.getText() == null ? "Vietnamese" : languageField.getText().trim();
         String category = categoryField.getValue();
-        String status = statusField.getValue();
-        String level = levelField.getValue();
+        String status = statusField.getValue() != null ? statusField.getValue() : "Draft";
+        String level = levelField.getValue() != null ? levelField.getValue() : "Beginner";
 
         if (title.isEmpty()) {
             showAlert("Thiếu thông tin", "Tên khóa học không được để trống.");
@@ -252,26 +377,96 @@ public class CourseDetailController {
             return;
         }
 
-        // cập nhật lại CourseRow để list phía ngoài thấy thay đổi
-        course.titleProperty().set(title);
-        course.categoryProperty().set(category);
-        course.instructorProperty().set(instructor.isEmpty() ? "Admin" : instructor);
-        course.priceProperty().set(price.isEmpty() ? "0 VNĐ" : price);
-        if (status != null) {
-            course.statusProperty().set(status);
+        dbCourse.setTitle(title);
+        dbCourse.setSubtitle(subtitle);
+        dbCourse.setPrice(new BigDecimal(priceStr.isEmpty() ? "0" : priceStr));
+        dbCourse.setLanguage(language);
+        dbCourse.setLevel(level);
+        dbCourse.setStatus(status.equalsIgnoreCase("published") ? "Active" : "Draft");
+        dbCourse.setInstructorId(1); // placeholder admin id
+
+        for (Category c : allCategories) {
+            if (c.getName().equals(category)) {
+                dbCourse.setCategoryId(c.getCategoryId());
+                break;
+            }
         }
 
-        // cập nhật lại subtitle hiển thị
-        if (subtitle.isEmpty()) {
-            subtitleField.setText("Khóa học " + category + " do " + course.instructorProperty().get() + " giảng dạy.");
+        CourseDAO cDao = new CourseDAO();
+        boolean success;
+        if (newCourse || dbCourse.getCourseId() == 0) {
+            success = cDao.insert(dbCourse);
+            if (success) {
+                newCourse = false;
+                courseRow = new CoursesController.CourseRow(dbCourse.getCourseId(), title, category, "Admin", priceStr,
+                        status, "Vừa xong");
+            }
+        } else {
+            success = cDao.update(dbCourse);
         }
 
-        showAlert("Đã lưu", newCourse ? "Khóa học mới đã được lưu bản nháp." : "Đã cập nhật thông tin khóa học.");
+        if (success) {
+            SectionDAO sDao = new SectionDAO();
+            LessonDAO lDao = new LessonDAO();
+
+            for (SectionWrapper sw : deletedSections) {
+                if (sw.section.getSectionId() > 0)
+                    sDao.delete(sw.section.getSectionId());
+            }
+            deletedSections.clear();
+
+            for (LessonWrapper lw : deletedLessons) {
+                if (lw.lesson.getLessonId() > 0)
+                    lDao.delete(lw.lesson.getLessonId());
+            }
+            deletedLessons.clear();
+
+            int secOrder = 1;
+            for (SectionWrapper sw : contentSections) {
+                sw.section.setCourseId(dbCourse.getCourseId());
+                sw.section.setTitle(sw.title.get());
+                sw.section.setOrderIndex(secOrder++);
+
+                if (sw.section.getSectionId() == 0) {
+                    sDao.insert(sw.section);
+                } else {
+                    sDao.update(sw.section);
+                }
+
+                int lesOrder = 1;
+                for (LessonWrapper lw : sw.lessons) {
+                    lw.lesson.setSectionId(sw.section.getSectionId());
+                    lw.lesson.setTitle(lw.title.get());
+                    lw.lesson.setContentType(lw.type.get());
+                    try {
+                        lw.lesson.setDurationSeconds(Integer.parseInt(lw.duration.get()) * 60);
+                    } catch (Exception e) {
+                        lw.lesson.setDurationSeconds(0);
+                    }
+                    lw.lesson.setPreview(lw.preview.get());
+                    lw.lesson.setContent(lw.content.get());
+                    lw.lesson.setOrderIndex(lesOrder++);
+
+                    if (lw.lesson.getLessonId() == 0) {
+                        lDao.insert(lw.lesson);
+                    } else {
+                        lDao.update(lw.lesson);
+                    }
+                }
+            }
+        }
+
+        showAlert("Đã lưu", success ? "Đã cập nhật thông tin khóa học vào Database." : "Lỗi khi lưu vào Database.");
     }
 
     @FXML
     private void onPublishClicked() {
-        if (course == null) return;
+        if (readOnly) {
+            showAlert("Chế độ xem", "Bạn đang ở chế độ xem chi tiết. Không thể xuất bản.");
+            return;
+        }
+        if (courseRow == null)
+            return;
         statusField.setValue("Published");
         onSaveClicked();
     }
@@ -288,38 +483,46 @@ public class CourseDetailController {
 
     @FXML
     private void onAddSectionClicked() {
-        if (content == null) return;
+        if (readOnly) {
+            showAlert("Chế độ xem", "Bạn đang ở chế độ xem chi tiết. Không thể thêm Section.");
+            return;
+        }
         TextInputDialog d = new TextInputDialog("Section mới");
         d.setTitle("Thêm Section");
         d.setHeaderText("Nhập tên section");
         d.setContentText("Tên:");
         d.showAndWait().ifPresent(name -> {
             String t = name.trim();
-            if (t.isEmpty()) return;
-            Section s = new Section(t);
-            content.sections.add(s);
-            if (sectionsList != null) {
-                sectionsList.getSelectionModel().select(s);
-            }
+            if (t.isEmpty())
+                return;
+            Section s = new Section();
+            s.setTitle(t);
+            SectionWrapper sw = new SectionWrapper(s);
+            contentSections.add(sw);
+            if (sectionsList != null)
+                sectionsList.getSelectionModel().select(sw);
             updateLessonSummaryLabel();
         });
     }
 
     @FXML
     private void onRenameSectionClicked() {
-        Section s = sectionsList == null ? null : sectionsList.getSelectionModel().getSelectedItem();
-        if (s == null) {
+        if (readOnly) {
+            showAlert("Chế độ xem", "Chế độ xem chi tiết, không thể đổi tên.");
+            return;
+        }
+        SectionWrapper sw = sectionsList == null ? null : sectionsList.getSelectionModel().getSelectedItem();
+        if (sw == null) {
             showAlert("Thiếu lựa chọn", "Hãy chọn một section để đổi tên.");
             return;
         }
-        TextInputDialog d = new TextInputDialog(s.title.get());
+        TextInputDialog d = new TextInputDialog(sw.title.get());
         d.setTitle("Đổi tên Section");
         d.setHeaderText("Cập nhật tên section");
         d.setContentText("Tên:");
         d.showAndWait().ifPresent(name -> {
-            String t = name.trim();
-            if (!t.isEmpty()) {
-                s.title.set(t);
+            if (!name.trim().isEmpty()) {
+                sw.title.set(name.trim());
                 sectionsList.refresh();
             }
         });
@@ -327,18 +530,23 @@ public class CourseDetailController {
 
     @FXML
     private void onDeleteSectionClicked() {
-        Section s = sectionsList == null ? null : sectionsList.getSelectionModel().getSelectedItem();
-        if (s == null) {
+        if (readOnly) {
+            showAlert("Chế độ xem", "Chế độ xem chi tiết, không thể xóa.");
+            return;
+        }
+        SectionWrapper sw = sectionsList == null ? null : sectionsList.getSelectionModel().getSelectedItem();
+        if (sw == null) {
             showAlert("Thiếu lựa chọn", "Hãy chọn một section để xóa.");
             return;
         }
         Alert a = new Alert(AlertType.CONFIRMATION);
         a.setTitle("Xóa Section");
-        a.setHeaderText("Xóa section \"" + s.title.get() + "\"");
+        a.setHeaderText("Xóa section \"" + sw.title.get() + "\"");
         a.setContentText("Tất cả bài giảng trong section này cũng sẽ bị xóa.");
         a.showAndWait().ifPresent(btn -> {
             if (btn == ButtonType.OK) {
-                content.sections.remove(s);
+                deletedSections.add(sw);
+                contentSections.remove(sw);
                 updateLessonSummaryLabel();
                 clearEditor();
             }
@@ -347,12 +555,16 @@ public class CourseDetailController {
 
     @FXML
     private void onAddLessonClicked() {
-        Section s = sectionsList == null ? null : sectionsList.getSelectionModel().getSelectedItem();
-        if (s == null) {
+        if (readOnly) {
+            showAlert("Chế độ xem", "Chế độ xem chi tiết, không thể thêm bài giảng.");
+            return;
+        }
+        SectionWrapper sw = sectionsList == null ? null : sectionsList.getSelectionModel().getSelectedItem();
+        if (sw == null) {
             showAlert("Thiếu lựa chọn", "Hãy chọn một section trước khi thêm bài giảng.");
             return;
         }
-        Dialog<Lesson> dialog = new Dialog<>();
+        Dialog<LessonWrapper> dialog = new Dialog<>();
         dialog.setTitle("Thêm Bài giảng");
         dialog.setHeaderText("Tạo bài giảng mới");
         ButtonType createBtn = new ButtonType("Tạo", ButtonBar.ButtonData.OK_DONE);
@@ -360,73 +572,93 @@ public class CourseDetailController {
 
         TextField title = new TextField();
         title.setPromptText("Tiêu đề bài giảng");
-        ComboBox<String> type = new ComboBox<>(FXCollections.observableArrayList("Video", "Article", "Quiz"));
-        type.setValue("Video");
+        ComboBox<String> type = new ComboBox<>(FXCollections.observableArrayList("video", "article", "quiz"));
+        type.setValue("video");
 
-        VBox box = new VBox(10,
-                new Label("Tiêu đề *"), title,
-                new Label("Loại"), type
-        );
+        VBox box = new VBox(10, new Label("Tiêu đề *"), title, new Label("Loại"), type);
         box.setPadding(new Insets(10));
         dialog.getDialogPane().setContent(box);
 
         dialog.setResultConverter(bt -> {
             if (bt == createBtn) {
                 String t = title.getText() == null ? "" : title.getText().trim();
-                if (t.isEmpty()) return null;
-                Lesson l = new Lesson(t);
-                l.type.set(type.getValue());
-                return l;
+                if (t.isEmpty())
+                    return null;
+                Lesson l = new Lesson();
+                l.setTitle(t);
+                l.setContentType(type.getValue());
+                return new LessonWrapper(l);
             }
             return null;
         });
 
-        dialog.showAndWait().ifPresent(lesson -> {
-            s.lessons.add(lesson);
-            lessonsList.getSelectionModel().select(lesson);
+        dialog.showAndWait().ifPresent(lw -> {
+            sw.lessons.add(lw);
+            lessonsList.getSelectionModel().select(lw);
             updateLessonSummaryLabel();
         });
     }
 
     @FXML
     private void onDeleteLessonClicked() {
-        Lesson l = lessonsList == null ? null : lessonsList.getSelectionModel().getSelectedItem();
-        Section s = sectionsList == null ? null : sectionsList.getSelectionModel().getSelectedItem();
-        if (s == null || l == null) {
+        if (readOnly) {
+            showAlert("Chế độ xem", "Chế độ xem chi tiết, không thể xóa bài giảng.");
+            return;
+        }
+        LessonWrapper lw = lessonsList == null ? null : lessonsList.getSelectionModel().getSelectedItem();
+        SectionWrapper sw = sectionsList == null ? null : sectionsList.getSelectionModel().getSelectedItem();
+        if (sw == null || lw == null) {
             showAlert("Thiếu lựa chọn", "Hãy chọn một bài giảng để xóa.");
             return;
         }
         Alert a = new Alert(AlertType.CONFIRMATION);
         a.setTitle("Xóa Bài giảng");
-        a.setHeaderText("Xóa bài giảng \"" + l.title.get() + "\"");
-        a.setContentText("Hành động này không thể hoàn tác.");
+        a.setHeaderText("Xóa bài giảng \"" + lw.title.get() + "\"");
         a.showAndWait().ifPresent(btn -> {
             if (btn == ButtonType.OK) {
-                s.lessons.remove(l);
+                deletedLessons.add(lw);
+                sw.lessons.remove(lw);
                 clearEditor();
                 updateLessonSummaryLabel();
             }
         });
     }
 
-    private void startEditingLesson(Lesson l) {
-        editingLesson = l;
-        editorStateLabel.setText("Đang chỉnh: " + l.title.get());
-        lessonTitleField.setText(l.title.get());
-        lessonTypeField.setValue(l.type.get());
-        lessonDurationField.setText(l.duration.get());
-        lessonPreviewCheck.setSelected(l.preview.get());
+    private void startEditingLesson(LessonWrapper lw) {
+        editingLesson = lw;
+        editorStateLabel.setText("Đang chỉnh: " + lw.title.get());
+        lessonTitleField.setText(lw.title.get());
+        lessonTypeField.setValue(lw.type.get());
+        lessonDurationField.setText(lw.duration.get());
+        lessonPreviewCheck.setSelected(lw.preview.get());
+
+        lessonTitleField.setEditable(!readOnly);
+        lessonTypeField.setDisable(readOnly);
+        lessonDurationField.setEditable(!readOnly);
+        lessonPreviewCheck.setDisable(readOnly);
+
         if (lessonHtmlEditor != null) {
-            String html = l.content.get();
-            if (html == null || html.isBlank()) {
-                html = "<p>" + escapeHtml(l.title.get()) + "</p>";
-            }
-            lessonHtmlEditor.setHtmlText(html);
+            final String finalHtml;
+            String html = lw.content.get();
+            if (html == null || html.isBlank())
+                finalHtml = "<p>" + escapeHtml(lw.title.get()) + "</p>";
+            else
+                finalHtml = html;
+            Platform.runLater(() -> {
+                try {
+                    lessonHtmlEditor.setHtmlText(finalHtml);
+                } catch (Exception ignore) {
+                }
+            });
         }
     }
 
     @FXML
     private void onSaveLessonClicked() {
+        if (readOnly) {
+            showAlert("Chế độ xem", "Chế độ xem chi tiết, không thể lưu bài giảng.");
+            return;
+        }
         if (editingLesson == null) {
             showAlert("Chưa chọn bài", "Hãy chọn một bài giảng để lưu.");
             return;
@@ -437,7 +669,7 @@ public class CourseDetailController {
             return;
         }
         editingLesson.title.set(t);
-        editingLesson.type.set(lessonTypeField.getValue() == null ? "Video" : lessonTypeField.getValue());
+        editingLesson.type.set(lessonTypeField.getValue() == null ? "video" : lessonTypeField.getValue());
         editingLesson.duration.set(lessonDurationField.getText() == null ? "" : lessonDurationField.getText().trim());
         editingLesson.preview.set(lessonPreviewCheck.isSelected());
         if (lessonHtmlEditor != null) {
@@ -446,49 +678,59 @@ public class CourseDetailController {
         lessonsList.refresh();
         sectionsList.refresh();
         updateLessonSummaryLabel();
-        showAlert("Đã lưu", "Đã lưu bài giảng.");
+        showAlert("Đã lưu nháp", "Đã lưu nháp bài giảng. Hãy bấm 'Lưu thay đổi' để lưu vào CSDL.");
     }
 
     @FXML
     private void onCancelLessonEditClicked() {
-        // reset editor fields from selected lesson (or clear)
-        Lesson l = lessonsList == null ? null : lessonsList.getSelectionModel().getSelectedItem();
-        if (l != null) startEditingLesson(l);
-        else clearEditor();
+        LessonWrapper lw = lessonsList == null ? null : lessonsList.getSelectionModel().getSelectedItem();
+        if (lw != null)
+            startEditingLesson(lw);
+        else
+            clearEditor();
     }
 
     @FXML
     private void onInsertImageClicked() {
-        if (lessonHtmlEditor == null) return;
+        if (lessonHtmlEditor == null)
+            return;
         TextInputDialog d = new TextInputDialog("https://");
         d.setTitle("Chèn ảnh");
         d.setHeaderText("Nhập URL ảnh để chèn vào nội dung bài giảng");
-        d.setContentText("URL Image:");
         d.showAndWait().ifPresent(url -> {
             String u = url.trim();
-            if (u.isEmpty() || u.equals("https://")) return;
-            String html = lessonHtmlEditor.getHtmlText();
-            String imgTag = "<p><img src=\"" + escapeHtml(u) + "\" style=\"max-width: 100%;\"/></p>";
-            lessonHtmlEditor.setHtmlText(html + imgTag);
+            if (u.isEmpty() || u.equals("https://"))
+                return;
+            lessonHtmlEditor.setHtmlText(lessonHtmlEditor.getHtmlText() + "<p><img src=\"" + escapeHtml(u)
+                    + "\" style=\"max-width: 100%;\"/></p>");
         });
     }
 
     private static String escapeHtml(String s) {
-        if (s == null) return "";
-        return s.replace("&", "&amp;")
-                .replace("<", "&lt;")
-                .replace(">", "&gt;")
-                .replace("\"", "&quot;");
+        if (s == null)
+            return "";
+        return s.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;").replace("\"", "&quot;");
     }
 
     private void clearEditor() {
         editingLesson = null;
-        if (editorStateLabel != null) editorStateLabel.setText("Chưa chọn bài giảng");
-        if (lessonTitleField != null) lessonTitleField.clear();
-        if (lessonTypeField != null) lessonTypeField.setValue("Video");
-        if (lessonDurationField != null) lessonDurationField.clear();
-        if (lessonPreviewCheck != null) lessonPreviewCheck.setSelected(false);
-        if (lessonHtmlEditor != null) lessonHtmlEditor.setHtmlText("");
+        if (editorStateLabel != null)
+            editorStateLabel.setText("Chưa chọn bài giảng");
+        if (lessonTitleField != null)
+            lessonTitleField.clear();
+        if (lessonTypeField != null)
+            lessonTypeField.setValue("video");
+        if (lessonDurationField != null)
+            lessonDurationField.clear();
+        if (lessonPreviewCheck != null)
+            lessonPreviewCheck.setSelected(false);
+        if (lessonHtmlEditor != null)
+            Platform.runLater(() -> {
+                try {
+                    lessonHtmlEditor.setHtmlText("");
+                } catch (Exception ignore) {
+                }
+            });
     }
 
     public static class EnrollmentRow {
@@ -500,9 +742,17 @@ public class CourseDetailController {
             this.progress = new SimpleStringProperty(progress);
         }
 
-        public SimpleStringProperty studentProperty() { return student; }
-        public SimpleStringProperty dateProperty() { return date; }
-        public SimpleStringProperty progressProperty() { return progress; }
+        public SimpleStringProperty studentProperty() {
+            return student;
+        }
+
+        public SimpleStringProperty dateProperty() {
+            return date;
+        }
+
+        public SimpleStringProperty progressProperty() {
+            return progress;
+        }
     }
 
     public static class ReviewRow {
@@ -515,41 +765,31 @@ public class CourseDetailController {
             this.date = new SimpleStringProperty(date);
         }
 
-        public SimpleStringProperty userProperty() { return user; }
-        public SimpleStringProperty ratingProperty() { return rating; }
-        public SimpleStringProperty commentProperty() { return comment; }
-        public SimpleStringProperty dateProperty() { return date; }
-    }
+        public SimpleStringProperty userProperty() {
+            return user;
+        }
 
-    /* ===== In-memory models ===== */
-    private static class CourseContent {
-        final ObservableList<Section> sections = FXCollections.observableArrayList();
+        public SimpleStringProperty ratingProperty() {
+            return rating;
+        }
 
-        static CourseContent createDefault() {
-            CourseContent c = new CourseContent();
-            Section s1 = new Section("Section 1 : Giới thiệu");
-            s1.lessons.addAll(
-                    new Lesson("Bài 1 : Tổng quan"),
-                    new Lesson("Bài 2 : Cài đặt môi trường")
-            );
-            Section s2 = new Section("Section 2 : Nội dung chính");
-            s2.lessons.addAll(
-                    new Lesson("Bài 3 : Kiến thức nền"),
-                    new Lesson("Bài 4 : Thực hành"),
-                    new Lesson("Bài 5 : Bài tập")
-            );
-            c.sections.addAll(s1, s2);
-            return c;
+        public SimpleStringProperty commentProperty() {
+            return comment;
+        }
+
+        public SimpleStringProperty dateProperty() {
+            return date;
         }
     }
 
-    public static class Section {
-        final String id = UUID.randomUUID().toString();
-        final SimpleStringProperty title = new SimpleStringProperty();
-        final ObservableList<Lesson> lessons = FXCollections.observableArrayList();
+    public static class SectionWrapper {
+        public final Section section;
+        public final SimpleStringProperty title = new SimpleStringProperty();
+        public final ObservableList<LessonWrapper> lessons = FXCollections.observableArrayList();
 
-        Section(String title) {
-            this.title.set(title);
+        public SectionWrapper(Section section) {
+            this.section = section;
+            this.title.set(section.getTitle());
         }
 
         @Override
@@ -558,16 +798,22 @@ public class CourseDetailController {
         }
     }
 
-    public static class Lesson {
-        final String id = UUID.randomUUID().toString();
-        final SimpleStringProperty title = new SimpleStringProperty();
-        final SimpleStringProperty type = new SimpleStringProperty("Video");
-        final SimpleStringProperty duration = new SimpleStringProperty("");
-        final javafx.beans.property.SimpleBooleanProperty preview = new javafx.beans.property.SimpleBooleanProperty(false);
-        final SimpleStringProperty content = new SimpleStringProperty("");
+    public static class LessonWrapper {
+        public final Lesson lesson;
+        public final SimpleStringProperty title = new SimpleStringProperty();
+        public final SimpleStringProperty type = new SimpleStringProperty("video");
+        public final SimpleStringProperty duration = new SimpleStringProperty("");
+        public final SimpleBooleanProperty preview = new SimpleBooleanProperty(false);
+        public final SimpleStringProperty content = new SimpleStringProperty("");
 
-        Lesson(String title) {
-            this.title.set(title);
+        public LessonWrapper(Lesson lesson) {
+            this.lesson = lesson;
+            this.title.set(lesson.getTitle());
+            this.type.set(lesson.getContentType() != null ? lesson.getContentType() : "video");
+            this.preview.set(lesson.isPreview());
+            this.duration
+                    .set(lesson.getDurationSeconds() != null ? String.valueOf(lesson.getDurationSeconds() / 60) : "");
+            this.content.set(lesson.getContent() != null ? lesson.getContent() : "");
         }
 
         @Override

@@ -4,9 +4,6 @@
 <?import javafx.scene.web.HTMLEditor?>
 <?import javafx.scene.layout.*?>
 
-<!--
-  Course Detail - Modern Dark Theme (scrollable)
--->
 <ScrollPane xmlns:fx="http://javafx.com/fxml"
             fx:controller="com.elearning.admin.controllers.CourseDetailController"
             fitToWidth="true"
@@ -14,9 +11,8 @@
     <content>
         <VBox spacing="20" styleClass="dashboard-root">
 
-    <!-- Header with Back button and editable title -->
     <HBox spacing="16" alignment="CENTER_LEFT" styleClass="courses-detail-header">
-        <Button text="�•� Quay lại" onAction="#onBackClicked" styleClass="courses-btn-back-modern"/>
+        <Button text="⬅ Quay lại" onAction="#onBackClicked" styleClass="courses-btn-back-modern"/>
         <VBox spacing="4" HBox.hgrow="ALWAYS">
             <VBox spacing="2">
                 <Label text="Tên khóa học *" styleClass="courses-editor-label"/>
@@ -32,14 +28,12 @@
             </VBox>
         </VBox>
         <HBox spacing="8">
-            <Button text="�💾� Lưu bản nháp" onAction="#onSaveClicked" styleClass="courses-btn-secondary"/>
-            <Button text="�Ys• Xuất bản" onAction="#onPublishClicked" styleClass="courses-btn-primary"/>
+            <Button text="💾 Lưu bản nháp" onAction="#onSaveClicked" styleClass="courses-btn-secondary"/>
+            <Button text="🚀 Xuất bản" onAction="#onPublishClicked" styleClass="courses-btn-primary"/>
         </HBox>
     </HBox>
 
-    <!-- Info Cards Row -->
     <HBox spacing="16">
-        <!-- Card: Thông tin cơ bản -->
         <VBox styleClass="courses-info-card" spacing="12" HBox.hgrow="ALWAYS">
             <Label text="Thông tin cơ bản" styleClass="courses-card-title"/>
             <HBox spacing="24">
@@ -47,11 +41,11 @@
                     <HBox spacing="8" alignment="CENTER_LEFT">
                         <Label text="Giá:" styleClass="courses-info-label"/>
                         <TextField fx:id="priceField"
-                                   promptText="VD: 499.000 �,�"
+                                   promptText="VD: 499.000 VNĐ"
                                    styleClass="courses-field"/>
                     </HBox>
                     <HBox spacing="8" alignment="CENTER_LEFT">
-                        <Label text="Cấp �'�T:" styleClass="courses-info-label"/>
+                        <Label text="Cấp độ:" styleClass="courses-info-label"/>
                         <ComboBox fx:id="levelField"
                                   promptText="Chọn level"
                                   prefWidth="140"
@@ -60,7 +54,7 @@
                     <HBox spacing="8" alignment="CENTER_LEFT">
                         <Label text="Ngôn ngữ:" styleClass="courses-info-label"/>
                         <TextField fx:id="languageField"
-                                   promptText="VD: Tiếng Vi�•t"
+                                   promptText="VD: Tiếng Việt"
                                    styleClass="courses-field"/>
                     </HBox>
                 </VBox>
@@ -89,9 +83,8 @@
             </HBox>
         </VBox>
 
-        <!-- Card: Th�'ng kê -->
         <VBox styleClass="courses-stats-card" spacing="12" prefWidth="260">
-            <Label text="Th�'ng kê" styleClass="courses-card-title"/>
+            <Label text="Thống kê" styleClass="courses-card-title"/>
             <HBox spacing="16">
                 <VBox alignment="CENTER" styleClass="courses-stat-item">
                     <Label text="18" styleClass="courses-stat-number"/>
@@ -109,21 +102,17 @@
         </VBox>
     </HBox>
 
-    <!-- Tabs -->
     <TabPane fx:id="detailTabs" VBox.vgrow="ALWAYS" styleClass="courses-tabs-modern">
-        <!-- Tab 1: Sections & Lessons -->
-        <Tab text="�Y"s Phần &amp; Bài học" closable="false">
+        <Tab text="📚 Phần &amp; Bài học" closable="false">
             <VBox spacing="12" styleClass="courses-tab-content">
                 <HBox alignment="CENTER_LEFT" spacing="12">
-                    <Label text="N�Ti dung khóa học" styleClass="courses-tab-section-title"/>
+                    <Label text="Nội dung khóa học" styleClass="courses-tab-section-title"/>
                     <Region HBox.hgrow="ALWAYS"/>
-                    <Label fx:id="lessonsLabel" text="4 phần �•� 18 bài học" styleClass="courses-tab-count"/>
+                    <Label fx:id="lessonsLabel" text="4 phần • 18 bài học" styleClass="courses-tab-count"/>
                 </HBox>
 
-                <!-- Course Builder: Sections | Lessons | Editor -->
                 <HBox spacing="14" VBox.vgrow="ALWAYS">
 
-                    <!-- Sections column -->
                     <VBox spacing="10" prefWidth="260" styleClass="courses-builder-card" VBox.vgrow="ALWAYS">
                         <HBox spacing="10" alignment="CENTER_LEFT">
                             <Label text="Sections" styleClass="courses-builder-title"/>
@@ -132,12 +121,11 @@
                         </HBox>
                         <ListView fx:id="sectionsList" VBox.vgrow="ALWAYS" styleClass="courses-builder-list"/>
                         <HBox spacing="10" alignment="CENTER_LEFT">
-                            <Button text="�o� Đ�.i tên" onAction="#onRenameSectionClicked" styleClass="courses-btn-secondary-mini"/>
-                            <Button text="�Y-' Xóa" onAction="#onDeleteSectionClicked" styleClass="courses-btn-danger-mini"/>
+                            <Button text="✏️ Đổi tên" onAction="#onRenameSectionClicked" styleClass="courses-btn-secondary-mini"/>
+                            <Button text="🗑️ Xóa" onAction="#onDeleteSectionClicked" styleClass="courses-btn-danger-mini"/>
                         </HBox>
                     </VBox>
 
-                    <!-- Lessons column -->
                     <VBox spacing="10" prefWidth="320" styleClass="courses-builder-card" VBox.vgrow="ALWAYS">
                         <HBox spacing="10" alignment="CENTER_LEFT">
                             <Label text="Bài giảng" styleClass="courses-builder-title"/>
@@ -146,13 +134,12 @@
                         </HBox>
                         <ListView fx:id="lessonsList" VBox.vgrow="ALWAYS" styleClass="courses-builder-list"/>
                         <HBox spacing="10" alignment="CENTER_LEFT">
-                            <Button text="�Y-' Xóa bài" onAction="#onDeleteLessonClicked" styleClass="courses-btn-danger-mini"/>
+                            <Button text="🗑️ Xóa bài" onAction="#onDeleteLessonClicked" styleClass="courses-btn-danger-mini"/>
                             <Region HBox.hgrow="ALWAYS"/>
                             <Label fx:id="selectedSectionLabel" text="Chưa chọn section" styleClass="courses-builder-hint"/>
                         </HBox>
                     </VBox>
 
-                    <!-- Lesson Editor panel -->
                     <VBox spacing="12" styleClass="courses-editor-panel" VBox.vgrow="ALWAYS" HBox.hgrow="ALWAYS">
                         <HBox spacing="10" alignment="CENTER_LEFT">
                             <Label text="Lesson Editor" styleClass="courses-builder-title"/>
@@ -162,8 +149,8 @@
 
                         <VBox spacing="10" styleClass="courses-editor-body" VBox.vgrow="ALWAYS">
                             <VBox spacing="6">
-                                <Label text="Tiêu �'ề bài giảng *" styleClass="courses-editor-label"/>
-                                <TextField fx:id="lessonTitleField" promptText="VD: Gi�>i thi�•u Java" styleClass="courses-field"/>
+                                <Label text="Tiêu đề bài giảng *" styleClass="courses-editor-label"/>
+                                <TextField fx:id="lessonTitleField" promptText="VD: Giới thiệu Java" styleClass="courses-field"/>
                             </VBox>
 
                             <HBox spacing="12">
@@ -183,7 +170,7 @@
 
                             <VBox spacing="6" VBox.vgrow="ALWAYS">
                                 <HBox alignment="CENTER_LEFT" spacing="8">
-                                    <Label text="N�Ti dung bài giảng" styleClass="courses-editor-label"/>
+                                    <Label text="Nội dung bài giảng" styleClass="courses-editor-label"/>
                                     <Region HBox.hgrow="ALWAYS"/>
                                     <Button text="Chèn ảnh URL" onAction="#onInsertImageClicked" styleClass="courses-btn-secondary-mini"/>
                                 </HBox>
@@ -193,43 +180,41 @@
 
                         <HBox spacing="10" alignment="CENTER_RIGHT">
                             <Button text="Hủy" onAction="#onCancelLessonEditClicked" styleClass="courses-btn-secondary-mini"/>
-                            <Button text="�💾� Lưu bài giảng" onAction="#onSaveLessonClicked" styleClass="courses-btn-primary-mini"/>
+                            <Button text="💾 Lưu bài giảng" onAction="#onSaveLessonClicked" styleClass="courses-btn-primary-mini"/>
                         </HBox>
                     </VBox>
                 </HBox>
             </VBox>
         </Tab>
 
-        <!-- Tab 2: Enrollments -->
-        <Tab text="�💾� Học viên" closable="false">
+        <Tab text="👥 Học viên" closable="false">
             <VBox spacing="12" styleClass="courses-tab-content">
                 <HBox alignment="CENTER_LEFT" spacing="12">
-                    <Label text="Danh sách học viên �'í �'�fng ký" styleClass="courses-tab-section-title"/>
+                    <Label text="Danh sách học viên đã đăng ký" styleClass="courses-tab-section-title"/>
                     <Region HBox.hgrow="ALWAYS"/>
                     <Label text="4 học viên" styleClass="courses-tab-count"/>
                 </HBox>
                 <TableView fx:id="enrollmentsTable" prefHeight="200" VBox.vgrow="ALWAYS">
                     <columns>
                         <TableColumn fx:id="enrollStudentCol" text="Tên học viên" prefWidth="200"/>
-                        <TableColumn fx:id="enrollDateCol" text="Ngày �'�fng ký" prefWidth="140"/>
-                        <TableColumn fx:id="enrollProgressCol" text="Tiến �'�T" prefWidth="120"/>
+                        <TableColumn fx:id="enrollDateCol" text="Ngày đăng ký" prefWidth="140"/>
+                        <TableColumn fx:id="enrollProgressCol" text="Tiến độ" prefWidth="120"/>
                     </columns>
                 </TableView>
             </VBox>
         </Tab>
 
-        <!-- Tab 3: Reviews -->
         <Tab text="⭐ Đánh giá" closable="false">
             <VBox spacing="12" styleClass="courses-tab-content">
                 <HBox alignment="CENTER_LEFT" spacing="12">
                     <Label text="Đánh giá từ học viên" styleClass="courses-tab-section-title"/>
                     <Region HBox.hgrow="ALWAYS"/>
-                    <Label text="3 �'ánh giá �•� 4.7 ⭐" styleClass="courses-tab-count"/>
+                    <Label text="3 đánh giá • 4.7 ⭐" styleClass="courses-tab-count"/>
                 </HBox>
                 <TableView fx:id="reviewsTable" prefHeight="200" VBox.vgrow="ALWAYS">
                     <columns>
                         <TableColumn fx:id="reviewUserCol" text="Học viên" prefWidth="160"/>
-                        <TableColumn fx:id="reviewRatingCol" text="Đi�fm" prefWidth="80"/>
+                        <TableColumn fx:id="reviewRatingCol" text="Điểm" prefWidth="80"/>
                         <TableColumn fx:id="reviewCommentCol" text="Bình luận" prefWidth="320"/>
                         <TableColumn fx:id="reviewDateCol" text="Ngày" prefWidth="100"/>
                     </columns>
@@ -240,4 +225,3 @@
         </VBox>
     </content>
 </ScrollPane>
-

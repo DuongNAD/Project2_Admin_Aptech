@@ -164,10 +164,15 @@ public class DiscussionsController {
         alert.setContentText("Nội dung sẽ bị xóa vĩnh viễn.");
         alert.showAndWait().ifPresent(response -> {
             if (response == ButtonType.OK) {
-                // Delete from DB logic here
-                currentComments.remove(c);
-                countLabel.setText(currentComments.size() + " bình luận");
-                renderComments();
+                DiscussionDAO dao = new DiscussionDAO();
+                if (dao.delete(Integer.parseInt(c.id))) {
+                    currentComments.remove(c);
+                    countLabel.setText(currentComments.size() + " bình luận");
+                    renderComments();
+                } else {
+                    Alert err = new Alert(Alert.AlertType.ERROR, "Không thể xóa bình luận từ cơ sở dữ liệu.");
+                    err.showAndWait();
+                }
             }
         });
     }

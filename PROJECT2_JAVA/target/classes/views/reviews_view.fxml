@@ -3,78 +3,68 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<!--
-  Reviews Management
-  - Stats + Filter bar
-  - TableView: Course, User, Rating, Comment (short), CreatedAt
-  - Actions: hide / delete review
--->
 <ScrollPane xmlns:fx="http://javafx.com/fxml"
             fx:controller="com.elearning.admin.controllers.ReviewsController"
             fitToWidth="true" styleClass="scroll-pane-clean">
     <VBox spacing="20" styleClass="dashboard-root">
 
-        <!-- Header -->
         <HBox spacing="16" alignment="CENTER_LEFT" styleClass="reviews-header">
             <VBox spacing="4" HBox.hgrow="ALWAYS">
                 <Label text="Đánh giá khóa học" styleClass="reviews-page-title"/>
-                <Label text="Quản lý �'ánh giá và bình luận của học viên" styleClass="reviews-page-subtitle"/>
+                <Label text="Quản lý đánh giá và bình luận của học viên" styleClass="reviews-page-subtitle"/>
             </VBox>
         </HBox>
 
-        <!-- Stats Cards -->
         <HBox spacing="16">
             <VBox styleClass="reviews-stat-card reviews-stat-total" HBox.hgrow="ALWAYS">
-                <Label text="T�"NG ĐÁNH GIÁ" styleClass="reviews-stat-label"/>
+                <Label text="TỔNG ĐÁNH GIÁ" styleClass="reviews-stat-label"/>
                 <Label text="2,847" styleClass="reviews-stat-value"/>
                 <Label text="Tất cả thời gian" styleClass="reviews-stat-sub"/>
             </VBox>
             <VBox styleClass="reviews-stat-card reviews-stat-avg" HBox.hgrow="ALWAYS">
-                <Label text="ĐI�,M TRUNG B�ONH" styleClass="reviews-stat-label"/>
+                <Label text="ĐIỂM TRUNG BÌNH" styleClass="reviews-stat-label"/>
                 <Label text="4.6 ⭐" styleClass="reviews-stat-value"/>
                 <Label text="Trên 5 sao" styleClass="reviews-stat-sub"/>
             </VBox>
             <VBox styleClass="reviews-stat-card reviews-stat-hidden" HBox.hgrow="ALWAYS">
-                <Label text="Đ�f ẨN" styleClass="reviews-stat-label"/>
+                <Label text="ĐÃ ẨN" styleClass="reviews-stat-label"/>
                 <Label text="12" styleClass="reviews-stat-value"/>
                 <Label text="Vi phạm / spam" styleClass="reviews-stat-sub"/>
             </VBox>
         </HBox>
 
-        <!-- Filter Bar -->
         <VBox spacing="12" styleClass="reviews-filter-card">
-            <Label text="B�T lọc �'ánh giá" styleClass="reviews-filter-title"/>
+            <Label text="Bộ lọc đánh giá" styleClass="reviews-filter-title"/>
             <HBox spacing="14" alignment="CENTER_LEFT">
                 <VBox spacing="4">
                     <Label text="Khóa học" styleClass="reviews-filter-label"/>
                     <ComboBox fx:id="courseFilter" promptText="Tất cả" prefWidth="200" styleClass="reviews-combo"/>
                 </VBox>
                 <VBox spacing="4">
-                    <Label text="Đi�fm �'ánh giá" styleClass="reviews-filter-label"/>
+                    <Label text="Điểm đánh giá" styleClass="reviews-filter-label"/>
                     <ComboBox fx:id="ratingFilter" promptText="Tất cả" prefWidth="140" styleClass="reviews-combo"/>
                 </VBox>
                 <VBox spacing="4">
                     <Label text="Trạng thái" styleClass="reviews-filter-label"/>
-                    <ComboBox fx:id="statusFilter" promptText="Hi�fn th�<" prefWidth="140" styleClass="reviews-combo"/>
+                    <ComboBox fx:id="statusFilter" promptText="Hiển thị" prefWidth="140" styleClass="reviews-combo"/>
                 </VBox>
                 <Region HBox.hgrow="ALWAYS"/>
-                <TextField fx:id="searchField" promptText="�Y"� Tìm theo n�Ti dung..." prefWidth="220" styleClass="reviews-search"/>
+                <TextField fx:id="searchField" promptText="🔍 Tìm theo nội dung..." prefWidth="220" styleClass="reviews-search"/>
             </HBox>
         </VBox>
 
-        <!-- Table -->
         <VBox styleClass="reviews-table-card" VBox.vgrow="ALWAYS">
             <HBox alignment="CENTER_LEFT" spacing="12" styleClass="reviews-table-header">
-                <Label text="Danh sách �'ánh giá" styleClass="reviews-table-title"/>
+                <Label text="Danh sách đánh giá" styleClass="reviews-table-title"/>
                 <Region HBox.hgrow="ALWAYS"/>
-                <Label fx:id="countLabel" text="2,847 �'ánh giá" styleClass="reviews-count-badge"/>
+                <Label fx:id="countLabel" text="2,847 đánh giá" styleClass="reviews-count-badge"/>
             </HBox>
             <TableView fx:id="reviewsTable" VBox.vgrow="ALWAYS" styleClass="reviews-table">
                 <columns>
                     <TableColumn fx:id="courseCol" text="Khóa học" prefWidth="200"/>
-                    <TableColumn fx:id="userCol" text="Người �'ánh giá" prefWidth="160"/>
-                    <TableColumn fx:id="ratingCol" text="Đi�fm" prefWidth="90"/>
-                    <TableColumn fx:id="commentCol" text="N�Ti dung (rút gọn)" prefWidth="280"/>
+                    <TableColumn fx:id="userCol" text="Người đánh giá" prefWidth="160"/>
+                    <TableColumn fx:id="ratingCol" text="Điểm" prefWidth="90"/>
+                    <TableColumn fx:id="commentCol" text="Nội dung (rút gọn)" prefWidth="280"/>
                     <TableColumn fx:id="createdCol" text="Ngày tạo" prefWidth="120"/>
                     <TableColumn fx:id="actionsCol" text="" prefWidth="120"/>
                 </columns>
@@ -82,4 +72,3 @@
         </VBox>
     </VBox>
 </ScrollPane>
-

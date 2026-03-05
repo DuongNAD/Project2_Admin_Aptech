@@ -1,7 +1,5 @@
 package com.elearning.admin.models;
 
-import java.sql.Timestamp;
-
 public class Lesson {
     private int lessonId;
     private int sectionId;
@@ -11,7 +9,7 @@ public class Lesson {
     private Integer durationSeconds;
     private int orderIndex;
     private boolean isPreview;
-    private Timestamp createdAt;
+    private String contentType;
 
     public Lesson() {
     }
@@ -80,11 +78,11 @@ public class Lesson {
         isPreview = preview;
     }
 
-    public Timestamp getCreatedAt() {
-        return createdAt;
+    public String getContentType() {
+        return contentType;
     }
 
-    public void setCreatedAt(Timestamp createdAt) {
-        this.createdAt = createdAt;
+    public void setContentType(String contentType) {
+        this.contentType = contentType;
     }
 }

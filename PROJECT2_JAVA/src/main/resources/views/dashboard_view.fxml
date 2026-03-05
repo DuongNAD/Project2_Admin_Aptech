@@ -4,62 +4,51 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<!--
-  Simple Dashboard view:
-  - Top row: statistic cards
-  - Middle: line chart (doanh thu)
-  - Bottom: table "Recent Orders"
--->
 <VBox xmlns:fx="http://javafx.com/fxml"
       fx:controller="com.elearning.admin.controllers.DashboardController"
       spacing="16"
       styleClass="dashboard-root">
 
-    <!-- Stat cards -->
     <HBox spacing="16">
         <children>
-            <!-- Doanh thu -->
             <VBox spacing="8" styleClass="dash-card dash-card-income">
                 <HBox spacing="8" alignment="CENTER_LEFT">
                     <children>
-                        <Label text="T•ng doanh thu" styleClass="dash-card-title"/>
+                        <Label text="Tổng doanh thu" styleClass="dash-card-title"/>
                         <Label text="+12.5%" styleClass="dash-badge-positive"/>
                     </children>
                 </HBox>
-                <Label fx:id="revenueLabel" text="348,261 •" styleClass="dash-card-value"/>
-                <Label text="So v•i th�ng tru•c" styleClass="dash-card-sub"/>
+                <Label fx:id="revenueLabel" text="348,261 $" styleClass="dash-card-value"/>
+                <Label text="So với tháng trước" styleClass="dash-card-sub"/>
             </VBox>
 
-            <!-- Kh�a h•c -->
             <VBox spacing="8" styleClass="dash-card dash-card-courses">
                 <HBox spacing="8" alignment="CENTER_LEFT">
                     <children>
-                        <Label text="S• kh�a h•c" styleClass="dash-card-title"/>
+                        <Label text="Số khóa học" styleClass="dash-card-title"/>
                         <Label text="+8" styleClass="dash-badge-neutral"/>
                     </children>
                 </HBox>
                 <Label fx:id="coursesCountLabel" text="128" styleClass="dash-card-value"/>
-                <Label text="Kh�a h•c dang ho•t d•ng" styleClass="dash-card-sub"/>
+                <Label text="Khóa học đang hoạt động" styleClass="dash-card-sub"/>
             </VBox>
 
-            <!-- H•c vi�n -->
             <VBox spacing="8" styleClass="dash-card dash-card-students">
                 <HBox spacing="8" alignment="CENTER_LEFT">
                     <children>
-                        <Label text="H•c vi�n dang h•c" styleClass="dash-card-title"/>
+                        <Label text="Học viên đang học" styleClass="dash-card-title"/>
                         <Label text="+320" styleClass="dash-badge-positive"/>
                     </children>
                 </HBox>
                 <Label fx:id="studentsCountLabel" text="7,415" styleClass="dash-card-value"/>
-                <Label text="Trong 30 ng�y g•n d�y" styleClass="dash-card-sub"/>
+                <Label text="Trong 30 ngày gần đây" styleClass="dash-card-sub"/>
             </VBox>
         </children>
     </HBox>
 
-    <!-- Charts row -->
     <VBox spacing="8">
         <children>
-            <Label text="Ph�n t�ch theo qu�" styleClass="dash-section-title"/>
+            <Label text="Phân tích theo quý" styleClass="dash-section-title"/>
             <HBox spacing="16">
                 <children>
                     <LineChart fx:id="revenueChart"
@@ -67,7 +56,7 @@
                                legendVisible="false"
                                HBox.hgrow="ALWAYS">
                         <xAxis>
-                            <CategoryAxis fx:id="xAxis" label="Qu�"/>
+                            <CategoryAxis fx:id="xAxis" label="Quý"/>
                         </xAxis>
                         <yAxis>
                             <NumberAxis fx:id="yAxis" label="Doanh thu ($)"/>
@@ -79,10 +68,10 @@
                               legendVisible="false"
                               HBox.hgrow="ALWAYS">
                         <xAxis>
-                            <CategoryAxis fx:id="enrollXAxis" label="Qu�"/>
+                            <CategoryAxis fx:id="enrollXAxis" label="Quý"/>
                         </xAxis>
                         <yAxis>
-                            <NumberAxis fx:id="enrollYAxis" label="H•c vi�n m•i"/>
+                            <NumberAxis fx:id="enrollYAxis" label="Học viên mới"/>
                         </yAxis>
                     </BarChart>
                 </children>
@@ -90,19 +79,18 @@
         </children>
     </VBox>
 
-    <!-- Recent orders table -->
     <VBox spacing="8">
         <children>
-            <Label text="Don h�ng g•n d�y" styleClass="dash-section-title"/>
+            <Label text="Đơn hàng gần đây" styleClass="dash-section-title"/>
             <TableView fx:id="ordersTable"
                        prefHeight="200"
                        VBox.vgrow="ALWAYS">
                 <columns>
-                    <TableColumn fx:id="orderIdCol" text="M� don" prefWidth="120"/>
-                    <TableColumn fx:id="studentCol" text="H•c vi�n" prefWidth="160"/>
-                    <TableColumn fx:id="courseCol" text="Kh�a h•c" prefWidth="220"/>
-                    <TableColumn fx:id="totalCol" text="T•ng ti•n" prefWidth="100"/>
-                    <TableColumn fx:id="statusCol" text="Tr•ng th�i" prefWidth="120"/>
+                    <TableColumn fx:id="orderIdCol" text="Mã đơn" prefWidth="120"/>
+                    <TableColumn fx:id="studentCol" text="Học viên" prefWidth="160"/>
+                    <TableColumn fx:id="courseCol" text="Khóa học" prefWidth="220"/>
+                    <TableColumn fx:id="totalCol" text="Tổng tiền" prefWidth="100"/>
+                    <TableColumn fx:id="statusCol" text="Trạng thái" prefWidth="120"/>
                 </columns>
             </TableView>
         </children>

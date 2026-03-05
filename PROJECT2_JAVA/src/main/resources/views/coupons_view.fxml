@@ -3,59 +3,50 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<!--
-  Coupons Management
-  - Left: Coupons list with table
-  - Right: Form to add/edit coupon
--->
 <ScrollPane xmlns:fx="http://javafx.com/fxml"
             fx:controller="com.elearning.admin.controllers.CouponsController"
             fitToWidth="true" styleClass="scroll-pane-clean">
     <VBox spacing="20" styleClass="dashboard-root">
 
-        <!-- Header -->
         <HBox spacing="16" alignment="CENTER_LEFT" styleClass="coupons-header">
             <VBox spacing="4" HBox.hgrow="ALWAYS">
-                <Label text="Mí giảm giá" styleClass="coupons-page-title"/>
-                <Label text="Quản lý các mí coupon và chương trình khuyến míi" styleClass="coupons-page-subtitle"/>
+                <Label text="Mã giảm giá" styleClass="coupons-page-title"/>
+                <Label text="Quản lý các mã coupon và chương trình khuyến mãi" styleClass="coupons-page-subtitle"/>
             </VBox>
         </HBox>
 
-        <!-- Stats Cards -->
         <HBox spacing="16">
             <VBox styleClass="coupons-stat-card coupons-stat-active" HBox.hgrow="ALWAYS">
-                <Label text="COUPON ĐANG HOẠT Đ�~NG" styleClass="coupons-stat-label"/>
+                <Label text="COUPON ĐANG HOẠT ĐỘNG" styleClass="coupons-stat-label"/>
                 <Label text="8" styleClass="coupons-stat-value"/>
-                <Label text="Có th�f sử dụng" styleClass="coupons-stat-sub"/>
+                <Label text="Có thể sử dụng" styleClass="coupons-stat-sub"/>
             </VBox>
             <VBox styleClass="coupons-stat-card coupons-stat-used" HBox.hgrow="ALWAYS">
-                <Label text="Đ�f SỬ DỤNG THÁNG N�•Y" styleClass="coupons-stat-label"/>
+                <Label text="ĐÃ SỬ DỤNG THÁNG NÀY" styleClass="coupons-stat-label"/>
                 <Label text="247" styleClass="coupons-stat-value"/>
                 <Label text="Lượt áp dụng" styleClass="coupons-stat-sub"/>
             </VBox>
             <VBox styleClass="coupons-stat-card coupons-stat-discount" HBox.hgrow="ALWAYS">
-                <Label text="T�"NG GIẢM GIÁ" styleClass="coupons-stat-label"/>
-                <Label text="4.2M �,�" styleClass="coupons-stat-value"/>
+                <Label text="TỔNG GIẢM GIÁ" styleClass="coupons-stat-label"/>
+                <Label text="4.2M VNĐ" styleClass="coupons-stat-value"/>
                 <Label text="Tháng này" styleClass="coupons-stat-sub"/>
             </VBox>
         </HBox>
 
-        <!-- Main Content: Table + Form -->
         <HBox spacing="20" prefHeight="600">
-            <!-- Left: Coupons Table -->
             <VBox spacing="14" HBox.hgrow="ALWAYS">
                 <VBox styleClass="coupons-table-card" VBox.vgrow="ALWAYS">
                     <HBox alignment="CENTER_LEFT" spacing="12" styleClass="coupons-table-header">
-                        <Label text="Tất cả mí giảm giá" styleClass="coupons-table-title"/>
+                        <Label text="Tất cả mã giảm giá" styleClass="coupons-table-title"/>
                         <Region HBox.hgrow="ALWAYS"/>
                         <Label fx:id="countLabel" text="15 coupons" styleClass="coupons-count-badge"/>
                     </HBox>
                     <TableView fx:id="couponsTable" VBox.vgrow="ALWAYS" styleClass="coupons-table">
                         <columns>
-                            <TableColumn fx:id="codeCol" text="Mí Code" prefWidth="140"/>
+                            <TableColumn fx:id="codeCol" text="Mã Code" prefWidth="140"/>
                             <TableColumn fx:id="discountCol" text="Giảm giá" prefWidth="100"/>
                             <TableColumn fx:id="activeCol" text="Trạng thái" prefWidth="120"/>
-                            <TableColumn fx:id="usageCol" text="Đí dùng" prefWidth="100"/>
+                            <TableColumn fx:id="usageCol" text="Đã dùng" prefWidth="100"/>
                             <TableColumn fx:id="expiryCol" text="Hết hạn" prefWidth="120"/>
                             <TableColumn fx:id="actionsCol" text="" prefWidth="100"/>
                         </columns>
@@ -63,17 +54,15 @@
                 </VBox>
             </VBox>
 
-            <!-- Right: Form Panel -->
             <VBox spacing="16" prefWidth="360" styleClass="coupons-form-panel">
                 <VBox spacing="8" styleClass="coupons-form-header">
-                    <Label fx:id="formTitle" text="Tạo mí giảm giá m�>i" styleClass="coupons-form-title"/>
-                    <Label text="Điền thông tin bên dư�>i" styleClass="coupons-form-subtitle"/>
+                    <Label fx:id="formTitle" text="Tạo mã giảm giá mới" styleClass="coupons-form-title"/>
+                    <Label text="Điền thông tin bên dưới" styleClass="coupons-form-subtitle"/>
                 </VBox>
 
-                <!-- Form Fields -->
                 <VBox spacing="16" styleClass="coupons-form-body">
                     <VBox spacing="8">
-                        <Label text="Mí Code *" styleClass="coupons-field-label"/>
+                        <Label text="Mã Code *" styleClass="coupons-field-label"/>
                         <TextField fx:id="codeField" promptText="VD: SALE2026" styleClass="coupons-field"/>
                     </VBox>
 
@@ -88,8 +77,8 @@
                     </VBox>
 
                     <VBox spacing="8">
-                        <Label text="S�' lượng t�'i �'a" styleClass="coupons-field-label"/>
-                        <TextField fx:id="maxUsageField" promptText="Không gi�>i hạn" styleClass="coupons-field"/>
+                        <Label text="Số lượng tối đa" styleClass="coupons-field-label"/>
+                        <TextField fx:id="maxUsageField" promptText="Không giới hạn" styleClass="coupons-field"/>
                     </VBox>
 
                     <VBox spacing="8">
@@ -100,20 +89,17 @@
                     </VBox>
                 </VBox>
 
-                <!-- Action Buttons -->
                 <VBox spacing="10" styleClass="coupons-form-actions">
-                    <Button fx:id="btnSave" text="�💾� Lưu coupon" onAction="#handleSave" styleClass="coupons-btn-save"/>
+                    <Button fx:id="btnSave" text="💾 Lưu coupon" onAction="#handleSave" styleClass="coupons-btn-save"/>
                     <Button fx:id="btnCancel" text="Hủy" onAction="#handleCancel" styleClass="coupons-btn-cancel"/>
                 </VBox>
 
-                <!-- Info Box -->
                 <VBox spacing="8" styleClass="coupons-info-box">
-                    <Label text="�💾� Gợi ý" styleClass="coupons-info-title"/>
-                    <Label text="�•� Code nên ngắn gọn, d�. nh�>&#10;�•� Giảm giá từ 5-50% là hợp lý&#10;�•� Đặt hạn sử dụng rõ ràng" 
+                    <Label text="💡 Gợi ý" styleClass="coupons-info-title"/>
+                    <Label text="• Code nên ngắn gọn, dễ nhớ&#10;• Giảm giá từ 5-50% là hợp lý&#10;• Đặt hạn sử dụng rõ ràng" 
                            wrapText="true" styleClass="coupons-info-text"/>
                 </VBox>
             </VBox>
         </HBox>
     </VBox>
 </ScrollPane>
-

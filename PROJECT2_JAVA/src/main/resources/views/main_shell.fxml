@@ -50,11 +50,7 @@
                         onAction="#onCategoriesClicked"
                         maxWidth="Infinity"
                         styleClass="shell-nav-button"/>
-                <Button fx:id="couponsButton"
-                        text="Coupons"
-                        onAction="#onCouponsClicked"
-                        maxWidth="Infinity"
-                        styleClass="shell-nav-button"/>
+
                 <Button fx:id="enrollmentsButton"
                         text="Enrollments"
                         onAction="#onEnrollmentsClicked"

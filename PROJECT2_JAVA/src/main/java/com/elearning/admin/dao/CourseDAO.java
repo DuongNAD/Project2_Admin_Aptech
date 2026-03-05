@@ -50,6 +50,37 @@ public class CourseDAO {
         return list;
     }
 
+    public Course getById(int courseId) {
+        String sql = "SELECT * FROM courses WHERE course_id = ?";
+        try (Connection conn = DatabaseConnect.getConnection();
+                PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, courseId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    Course course = new Course();
+                    course.setCourseId(rs.getInt("course_id"));
+                    course.setApprovedBy(rs.getInt("approved_by"));
+                    course.setCategoryId(rs.getInt("category_id"));
+                    course.setTitle(rs.getString("title"));
+                    course.setSubtitle(rs.getString("subtitle"));
+                    course.setDescription(rs.getString("description"));
+                    course.setPrice(rs.getBigDecimal("price"));
+                    course.setSalePrice(rs.getBigDecimal("sale_price"));
+                    course.setThumbnailUrl(rs.getString("thumbnail_url"));
+                    course.setLanguage(rs.getString("language"));
+                    course.setLevel(rs.getString("level"));
+                    course.setStatus(rs.getString("status"));
+                    course.setCreatedAt(rs.getTimestamp("created_at"));
+                    course.setUpdatedAt(rs.getTimestamp("updated_at"));
+                    return course;
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     public boolean insert(Course course) {
         String sql = "INSERT INTO courses (approved_by, category_id, title, subtitle, description, " +
                 "price, sale_price, thumbnail_url, language, level, status) " +

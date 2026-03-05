@@ -130,6 +130,7 @@ public class ReviewsController {
                 distinctCourses.add(cTitle);
 
             rows.add(new ReviewRow(
+                    dto.review.getReviewId(),
                     cTitle,
                     dto.userName != null ? dto.userName : "N/A",
                     String.valueOf(dto.review.getRating()),
@@ -201,8 +202,13 @@ public class ReviewsController {
         alert.setContentText("Hành động này không thể hoàn tác.");
         alert.showAndWait().ifPresent(response -> {
             if (response == ButtonType.OK) {
-                allReviews.remove(row);
-                updateCount();
+                ReviewDAO dao = new ReviewDAO();
+                if (dao.delete(row.getReviewId())) {
+                    allReviews.remove(row);
+                    updateCount();
+                } else {
+                    showAlert("Lỗi", "Không thể xóa đánh giá khỏi CSDL.");
+                }
             }
         });
     }
@@ -220,16 +226,23 @@ public class ReviewsController {
     }
 
     public static class ReviewRow {
+        private final int reviewId;
         private final SimpleStringProperty course, user, rating, comment, created;
         private boolean visible;
 
-        public ReviewRow(String course, String user, String rating, String comment, String created, boolean visible) {
+        public ReviewRow(int reviewId, String course, String user, String rating, String comment, String created,
+                boolean visible) {
+            this.reviewId = reviewId;
             this.course = new SimpleStringProperty(course);
             this.user = new SimpleStringProperty(user);
             this.rating = new SimpleStringProperty(rating);
             this.comment = new SimpleStringProperty(comment);
             this.created = new SimpleStringProperty(created);
             this.visible = visible;
+        }
+
+        public int getReviewId() {
+            return reviewId;
         }
 
         public String getCourse() {

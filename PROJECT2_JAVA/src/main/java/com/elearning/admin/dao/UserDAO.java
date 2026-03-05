@@ -14,8 +14,7 @@ public class UserDAO {
 
     public List<UserWithCount> getAllUsersWithCourseCount() {
         List<UserWithCount> list = new ArrayList<>();
-        // For ? students : count enrollments. For ? instructors : count courses
-        // created.
+
         String sql = "SELECT u.*, " +
                 "  CASE " +
                 "    WHEN u.role = 'student' THEN (SELECT COUNT(*) FROM enrollments e WHERE e.user_id = u.user_id) " +
@@ -33,25 +32,77 @@ public class UserDAO {
                 user.setFullName(rs.getString("full_name"));
                 user.setEmail(rs.getString("email"));
                 user.setRole(rs.getString("role"));
+
+                boolean isActive = rs.getBoolean("is_active");
+                user.setStatus(isActive ? "Active" : "Inactive");
+
                 user.setCreatedAt(rs.getTimestamp("created_at"));
 
                 int count = rs.getInt("courses_count");
-                list.add(new UserWithCount(user, count, "Active")); // hardcode Active as there is no status column
+                list.add(new UserWithCount(user, count, user.getStatus()));
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
+
+        // Fetch admins
+        String adminSql = "SELECT admin_id, full_name, email, created_at FROM admins";
+        try (Connection conn = DatabaseConnect.getConnection();
+                PreparedStatement stmt = conn.prepareStatement(adminSql);
+                ResultSet rs = stmt.executeQuery()) {
+
+            while (rs.next()) {
+                User user = new User();
+                // Admin IDs can conflict with User IDs. For UI purposes we can negate the ID to
+                // distinguish.
+                user.setUserId(-rs.getInt("admin_id"));
+                user.setFullName(rs.getString("full_name"));
+                user.setEmail(rs.getString("email"));
+                user.setRole("Admin");
+                user.setStatus("Active");
+                user.setCreatedAt(rs.getTimestamp("created_at"));
+
+                list.add(new UserWithCount(user, 0, user.getStatus()));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
         return list;
     }
 
-    public void deleteUser(int userId) {
+    public boolean deleteUser(int userId) {
+        if (userId < 0) {
+            // It's an admin. We don't allow deleting admins from this interface.
+            return false;
+        }
         String sql = "DELETE FROM users WHERE user_id = ?";
         try (Connection conn = DatabaseConnect.getConnection();
                 PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, userId);
-            stmt.executeUpdate();
+            int rowsDeleted = stmt.executeUpdate();
+            return rowsDeleted > 0;
         } catch (SQLException e) {
             e.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean updateUserStatus(int userId, String status) {
+        if (userId < 0) {
+            // Block banning admins for safety, or implement logic for admin table
+            return false;
+        }
+        String sql = "UPDATE users SET is_active = ? WHERE user_id = ?";
+        try (Connection conn = DatabaseConnect.getConnection();
+                PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, "Active".equals(status) ? 1 : 0);
+            stmt.setInt(2, userId);
+            int rowsUpdated = stmt.executeUpdate();
+            return rowsUpdated > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
         }
     }
 

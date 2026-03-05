@@ -117,10 +117,15 @@ public class CategoriesController {
 
         alert.showAndWait().ifPresent(response -> {
             if (response == ButtonType.OK) {
-                // Delete API call omitted for simplicity, UI only
-                categories.remove(category);
-                updateCount();
-                handleCancel();
+                CategoryDAO dao = new CategoryDAO();
+                boolean success = dao.delete(category.getId());
+                if (success) {
+                    loadRealData();
+                    handleCancel();
+                    showAlert("Thành công", "Đã xóa danh mục!");
+                } else {
+                    showAlert("Lỗi", "Không thể xóa danh mục này (có thể do ràng buộc khóa ngoài).");
+                }
             }
         });
     }
@@ -135,20 +140,29 @@ public class CategoriesController {
             return;
         }
 
+        CategoryDAO dao = new CategoryDAO();
+        boolean success;
+
         if (selectedCategory != null) {
-            // Update UI only
-            selectedCategory.setName(name);
-            selectedCategory.setDescription(desc);
-            categoriesTable.refresh();
+            Category cat = new Category();
+            cat.setCategoryId(selectedCategory.getId());
+            cat.setName(name);
+            cat.setDescription(desc);
+            success = dao.update(cat);
         } else {
-            // Add UI only
-            CategoryRow newCat = new CategoryRow(0, name, desc, "0");
-            categories.add(newCat);
-            updateCount();
+            Category newCat = new Category();
+            newCat.setName(name);
+            newCat.setDescription(desc);
+            success = dao.insert(newCat);
         }
 
-        handleCancel();
-        showAlert("Thành công", "Danh mục đã được lưu!");
+        if (success) {
+            loadRealData();
+            handleCancel();
+            showAlert("Thành công", "Danh mục đã được lưu!");
+        } else {
+            showAlert("Lỗi", "Có lỗi xảy ra khi lưu danh mục.");
+        }
     }
 
     @FXML
