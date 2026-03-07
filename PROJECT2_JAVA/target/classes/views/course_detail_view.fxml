@@ -87,15 +87,15 @@
             <Label text="Thống kê" styleClass="courses-card-title"/>
             <HBox spacing="16">
                 <VBox alignment="CENTER" styleClass="courses-stat-item">
-                    <Label fx:id="statLessonsLabel" text="0" styleClass="courses-stat-number"/>
+                    <Label text="18" styleClass="courses-stat-number"/>
                     <Label text="Bài học" styleClass="courses-stat-label"/>
                 </VBox>
                 <VBox alignment="CENTER" styleClass="courses-stat-item">
-                    <Label fx:id="statEnrollmentsLabel" text="0" styleClass="courses-stat-number"/>
+                    <Label text="4" styleClass="courses-stat-number"/>
                     <Label text="Học viên" styleClass="courses-stat-label"/>
                 </VBox>
                 <VBox alignment="CENTER" styleClass="courses-stat-item">
-                    <Label fx:id="statRatingLabel" text="0.0" styleClass="courses-stat-number"/>
+                    <Label text="4.5" styleClass="courses-stat-number"/>
                     <Label text="Đánh giá" styleClass="courses-stat-label"/>
                 </VBox>
             </HBox>
@@ -192,7 +192,7 @@
                 <HBox alignment="CENTER_LEFT" spacing="12">
                     <Label text="Danh sách học viên đã đăng ký" styleClass="courses-tab-section-title"/>
                     <Region HBox.hgrow="ALWAYS"/>
-                    <Label fx:id="tabEnrollmentsCountLabel" text="0 học viên" styleClass="courses-tab-count"/>
+                    <Label text="4 học viên" styleClass="courses-tab-count"/>
                 </HBox>
                 <TableView fx:id="enrollmentsTable" prefHeight="200" VBox.vgrow="ALWAYS">
                     <columns>
@@ -209,7 +209,7 @@
                 <HBox alignment="CENTER_LEFT" spacing="12">
                     <Label text="Đánh giá từ học viên" styleClass="courses-tab-section-title"/>
                     <Region HBox.hgrow="ALWAYS"/>
-                    <Label fx:id="tabReviewsCountLabel" text="0 đánh giá • 0.0 ⭐" styleClass="courses-tab-count"/>
+                    <Label text="3 đánh giá • 4.7 ⭐" styleClass="courses-tab-count"/>
                 </HBox>
                 <TableView fx:id="reviewsTable" prefHeight="200" VBox.vgrow="ALWAYS">
                     <columns>
