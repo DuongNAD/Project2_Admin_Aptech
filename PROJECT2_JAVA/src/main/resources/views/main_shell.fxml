@@ -61,14 +61,11 @@
                         onAction="#onReviewsClicked"
                         maxWidth="Infinity"
                         styleClass="shell-nav-button"/>
-                <Button fx:id="discussionsButton"
-                        text="Discussions"
-                        onAction="#onDiscussionsClicked"
-                        maxWidth="Infinity"
-                        styleClass="shell-nav-button"/>
-                <Button fx:id="certificatesButton"
-                        text="Certificates"
-                        onAction="#onCertificatesClicked"
+
+
+                <Button fx:id="chatButton"
+                        text="Chat"
+                        onAction="#onChatClicked"
                         maxWidth="Infinity"
                         styleClass="shell-nav-button"/>
             </children>

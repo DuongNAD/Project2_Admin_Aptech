@@ -81,16 +81,16 @@
 
     <VBox spacing="8">
         <children>
-            <Label text="Đơn hàng gần đây" styleClass="dash-section-title"/>
+            <Label text="Khóa học đăng ký gần đây" styleClass="dash-section-title"/>
             <TableView fx:id="ordersTable"
                        prefHeight="200"
                        VBox.vgrow="ALWAYS">
                 <columns>
-                    <TableColumn fx:id="orderIdCol" text="Mã đơn" prefWidth="120"/>
+                    <TableColumn fx:id="enrollmentDateCol" text="Ngày đăng ký" prefWidth="140"/>
                     <TableColumn fx:id="studentCol" text="Học viên" prefWidth="160"/>
                     <TableColumn fx:id="courseCol" text="Khóa học" prefWidth="220"/>
-                    <TableColumn fx:id="totalCol" text="Tổng tiền" prefWidth="100"/>
-                    <TableColumn fx:id="statusCol" text="Trạng thái" prefWidth="120"/>
+                    <TableColumn fx:id="progressCol" text="Tiến độ" prefWidth="100"/>
+                    <TableColumn fx:id="statusCol" text="Trạng thái" prefWidth="110"/>
                 </columns>
             </TableView>
         </children>

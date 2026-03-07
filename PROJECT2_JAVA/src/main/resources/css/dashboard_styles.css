@@ -2090,3 +2090,77 @@
     -fx-font-size: 12px;
     -fx-padding: 24;
 }
+
+/* ====== CHAT ====== */
+.chat-empty-label {
+    -fx-text-fill: #9ca3af;
+    -fx-font-size: 14px;
+    -fx-padding: 40;
+    -fx-alignment: center;
+}
+
+.chat-msg-card {
+    -fx-background-color: #0f172a;
+    -fx-background-radius: 12;
+    -fx-border-color: #1e293b;
+    -fx-border-radius: 12;
+    -fx-border-width: 1;
+    -fx-padding: 16;
+    -fx-effect: dropshadow(gaussian, rgba(15,23,42,0.4), 10, 0.2, 0, 4);
+}
+.chat-msg-card:hover {
+    -fx-background-color: #1e293b;
+    -fx-border-color: #334155;
+    -fx-effect: dropshadow(gaussian, rgba(15,23,42,0.6), 12, 0.3, 0, 6);
+}
+
+.chat-avatar {
+    -fx-background-color: linear-gradient(to bottom right, #6d28d9, #7c3aed);
+    -fx-text-fill: #ffffff;
+    -fx-background-radius: 999;
+    -fx-font-size: 16px;
+    -fx-font-weight: 800;
+    -fx-alignment: center;
+    -fx-effect: dropshadow(gaussian, rgba(109,40,217,0.4), 8, 0.3, 0, 4);
+}
+
+.chat-msg-user {
+    -fx-text-fill: #f9fafb;
+    -fx-font-size: 14px;
+    -fx-font-weight: 800;
+}
+
+.chat-msg-id {
+    -fx-text-fill: #6b7280;
+    -fx-font-size: 12px;
+    -fx-font-family: "Courier New";
+    -fx-background-color: rgba(107,114,128,0.1);
+    -fx-padding: 2 6;
+    -fx-background-radius: 4;
+}
+
+.chat-msg-date {
+    -fx-text-fill: #9ca3af;
+    -fx-font-size: 12px;
+}
+
+.chat-msg-content {
+    -fx-text-fill: #cbd5e1;
+    -fx-font-size: 14px;
+    -fx-padding: 6 0 0 0;
+}
+
+.chat-btn-delete {
+    -fx-background-color: rgba(239,68,68,0.1);
+    -fx-text-fill: #ef4444;
+    -fx-font-size: 14px;
+    -fx-background-radius: 8;
+    -fx-padding: 8 14 8 14;
+    -fx-border-color: rgba(239,68,68,0.2);
+    -fx-border-radius: 8;
+    -fx-cursor: hand;
+}
+.chat-btn-delete:hover {
+    -fx-background-color: rgba(239,68,68,0.25);
+    -fx-border-color: rgba(239,68,68,0.4);
+}

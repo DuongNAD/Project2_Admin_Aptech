@@ -38,6 +38,10 @@ public class CourseDetailController {
     private TabPane detailTabs;
     @FXML
     private Label lessonsLabel;
+    @FXML
+    private Label statLessonsLabel, statEnrollmentsLabel, statRatingLabel;
+    @FXML
+    private Label tabEnrollmentsCountLabel, tabReviewsCountLabel;
 
     @FXML
     private ListView<SectionWrapper> sectionsList;
@@ -297,6 +301,8 @@ public class CourseDetailController {
         int sectionCount = contentSections.size();
         int lessonCount = contentSections.stream().mapToInt(s -> s.lessons.size()).sum();
         lessonsLabel.setText(sectionCount + " phần • " + lessonCount + " bài học");
+        if (statLessonsLabel != null)
+            statLessonsLabel.setText(String.valueOf(lessonCount));
         if (sectionsList != null)
             sectionsList.refresh();
     }
@@ -307,10 +313,12 @@ public class CourseDetailController {
         enrollProgressCol.setCellValueFactory(c -> c.getValue().progressProperty());
 
         ObservableList<EnrollmentRow> rows = FXCollections.observableArrayList();
+        int count = 0;
         if (dbCourse != null && dbCourse.getCourseId() > 0) {
             SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
             EnrollmentDAO enrDAO = new EnrollmentDAO();
             List<EnrollmentDAO.EnrollmentDTO> enrList = enrDAO.getByCourseId(dbCourse.getCourseId());
+            count = enrList.size();
             for (EnrollmentDAO.EnrollmentDTO dto : enrList) {
                 String dateStr = dto.enrollment.getEnrolledAt() != null
                         ? sdf.format(dto.enrollment.getEnrolledAt())
@@ -320,6 +328,10 @@ public class CourseDetailController {
             }
         }
         enrollmentsTable.setItems(rows);
+        if (statEnrollmentsLabel != null)
+            statEnrollmentsLabel.setText(String.valueOf(count));
+        if (tabEnrollmentsCountLabel != null)
+            tabEnrollmentsCountLabel.setText(count + " học viên");
     }
 
     private void loadReviews() {
@@ -329,11 +341,16 @@ public class CourseDetailController {
         reviewDateCol.setCellValueFactory(c -> c.getValue().dateProperty());
 
         ObservableList<ReviewRow> rows = FXCollections.observableArrayList();
+        int count = 0;
+        double avgRating = 0.0;
         if (dbCourse != null && dbCourse.getCourseId() > 0) {
             SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
             ReviewDAO revDAO = new ReviewDAO();
             List<ReviewDAO.ReviewDTO> revList = revDAO.getByCourseId(dbCourse.getCourseId());
+            count = revList.size();
+            double totalStars = 0;
             for (ReviewDAO.ReviewDTO dto : revList) {
+                totalStars += dto.review.getRating();
                 String dateStr = dto.review.getCreatedAt() != null
                         ? sdf.format(dto.review.getCreatedAt())
                         : "N/A";
@@ -341,8 +358,16 @@ public class CourseDetailController {
                 String comment = dto.review.getComment() != null ? dto.review.getComment() : "";
                 rows.add(new ReviewRow(dto.userName, rating, comment, dateStr));
             }
+            if (count > 0) {
+                avgRating = totalStars / count;
+            }
         }
         reviewsTable.setItems(rows);
+        String ratingStr = String.format(java.util.Locale.US, "%.1f", avgRating);
+        if (statRatingLabel != null)
+            statRatingLabel.setText(ratingStr);
+        if (tabReviewsCountLabel != null)
+            tabReviewsCountLabel.setText(count + " đánh giá • " + ratingStr + " ⭐");
     }
 
     @FXML

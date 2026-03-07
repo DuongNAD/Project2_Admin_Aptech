@@ -43,27 +43,25 @@ public class DashboardController {
     private NumberAxis enrollYAxis;
 
     @FXML
-    private TableView<OrderRow> ordersTable;
+    private TableView<EnrollmentRow> ordersTable;
 
     @FXML
-    private TableColumn<OrderRow, String> orderIdCol;
+    private TableColumn<EnrollmentRow, String> enrollmentDateCol;
 
     @FXML
-    private TableColumn<OrderRow, String> studentCol;
+    private TableColumn<EnrollmentRow, String> studentCol;
 
     @FXML
-    private TableColumn<OrderRow, String> courseCol;
+    private TableColumn<EnrollmentRow, String> courseCol;
 
     @FXML
-    private TableColumn<OrderRow, String> totalCol;
+    private TableColumn<EnrollmentRow, String> progressCol;
 
     @FXML
-    private TableColumn<OrderRow, String> statusCol;
+    private TableColumn<EnrollmentRow, String> statusCol;
 
     @FXML
     public void initialize() {
-        setupChart();
-        setupEnrollmentChart();
         setupOrdersTable();
         loadRealData();
     }
@@ -79,28 +77,36 @@ public class DashboardController {
         if (studentsCountLabel != null)
             studentsCountLabel.setText(String.format("%,d", metrics.totalStudents));
 
-        List<DashboardDAO.RecentOrderDTO> recent = dao.getRecentOrders(10);
-        ObservableList<OrderRow> rows = FXCollections.observableArrayList();
-        for (DashboardDAO.RecentOrderDTO r : recent) {
-            rows.add(new OrderRow(r.orderId, r.studentName, r.courseTitle, r.total, r.status));
+        List<DashboardDAO.RecentEnrollmentDTO> recent = dao.getRecentEnrollments(10);
+        ObservableList<EnrollmentRow> rows = FXCollections.observableArrayList();
+        for (DashboardDAO.RecentEnrollmentDTO r : recent) {
+            rows.add(new EnrollmentRow(r.enrollmentDate, r.studentName, r.courseTitle, r.progress, r.status));
         }
         ordersTable.setItems(rows);
+
+        int currentYear = java.time.Year.now().getValue();
+        double[] rev = dao.getRevenueByQuarter(currentYear);
+        int[] stu = dao.getNewStudentsByQuarter(currentYear);
+        setupChart(rev);
+        setupEnrollmentChart(stu);
     }
 
-    private void setupChart() {
+    private void setupChart(double[] rev) {
         xAxis.setLabel("Quý");
         yAxis.setLabel("Doanh thu ($)");
 
+        revenueChart.getData().clear();
+
         XYChart.Series<String, Number> series = new XYChart.Series<>();
-        series.getData().add(new XYChart.Data<>("Q1", 120_000));
-        series.getData().add(new XYChart.Data<>("Q2", 180_000));
-        series.getData().add(new XYChart.Data<>("Q3", 230_000));
-        series.getData().add(new XYChart.Data<>("Q4", 348_261));
+        series.getData().add(new XYChart.Data<>("Q1", rev[0]));
+        series.getData().add(new XYChart.Data<>("Q2", rev[1]));
+        series.getData().add(new XYChart.Data<>("Q3", rev[2]));
+        series.getData().add(new XYChart.Data<>("Q4", rev[3]));
 
         revenueChart.getData().add(series);
     }
 
-    private void setupEnrollmentChart() {
+    private void setupEnrollmentChart(int[] stu) {
         enrollXAxis.setLabel("Quý");
         enrollYAxis.setLabel("Học viên mới");
 
@@ -113,40 +119,40 @@ public class DashboardController {
 
         XYChart.Series<String, Number> series = new XYChart.Series<>();
         series.setName("Học viên mới");
-        series.getData().add(new XYChart.Data<>("Q1", 320));
-        series.getData().add(new XYChart.Data<>("Q2", 480));
-        series.getData().add(new XYChart.Data<>("Q3", 650));
-        series.getData().add(new XYChart.Data<>("Q4", 820));
+        series.getData().add(new XYChart.Data<>("Q1", stu[0]));
+        series.getData().add(new XYChart.Data<>("Q2", stu[1]));
+        series.getData().add(new XYChart.Data<>("Q3", stu[2]));
+        series.getData().add(new XYChart.Data<>("Q4", stu[3]));
 
         enrollmentChart.getData().add(series);
     }
 
     private void setupOrdersTable() {
-        orderIdCol.setCellValueFactory(cell -> cell.getValue().orderIdProperty());
+        enrollmentDateCol.setCellValueFactory(cell -> cell.getValue().enrollmentDateProperty());
         studentCol.setCellValueFactory(cell -> cell.getValue().studentProperty());
         courseCol.setCellValueFactory(cell -> cell.getValue().courseProperty());
-        totalCol.setCellValueFactory(cell -> cell.getValue().totalProperty());
+        progressCol.setCellValueFactory(cell -> cell.getValue().progressProperty());
         statusCol.setCellValueFactory(cell -> cell.getValue().statusProperty());
         ordersTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
     }
 
-    public static class OrderRow {
-        private final SimpleStringProperty orderId;
+    public static class EnrollmentRow {
+        private final SimpleStringProperty enrollmentDate;
         private final SimpleStringProperty student;
         private final SimpleStringProperty course;
-        private final SimpleStringProperty total;
+        private final SimpleStringProperty progress;
         private final SimpleStringProperty status;
 
-        public OrderRow(String orderId, String student, String course, String total, String status) {
-            this.orderId = new SimpleStringProperty(orderId);
+        public EnrollmentRow(String enrollmentDate, String student, String course, String progress, String status) {
+            this.enrollmentDate = new SimpleStringProperty(enrollmentDate);
             this.student = new SimpleStringProperty(student);
             this.course = new SimpleStringProperty(course);
-            this.total = new SimpleStringProperty(total);
+            this.progress = new SimpleStringProperty(progress);
             this.status = new SimpleStringProperty(status);
         }
 
-        public SimpleStringProperty orderIdProperty() {
-            return orderId;
+        public SimpleStringProperty enrollmentDateProperty() {
+            return enrollmentDate;
         }
 
         public SimpleStringProperty studentProperty() {
@@ -157,8 +163,8 @@ public class DashboardController {
             return course;
         }
 
-        public SimpleStringProperty totalProperty() {
-            return total;
+        public SimpleStringProperty progressProperty() {
+            return progress;
         }
 
         public SimpleStringProperty statusProperty() {

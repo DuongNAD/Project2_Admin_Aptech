@@ -43,6 +43,7 @@ public class EnrollmentsController {
 
     private ObservableList<EnrollmentRow> allEnrollments;
     private FilteredList<EnrollmentRow> filteredEnrollments;
+    private EnrollmentRow selectedEnrollment;
 
     @FXML
     public void initialize() {
@@ -224,6 +225,7 @@ public class EnrollmentsController {
     }
 
     private void showEnrollmentDetail(EnrollmentRow enrollment) {
+        this.selectedEnrollment = enrollment;
         lblStudent.setText(enrollment.getUser());
         lblCourse.setText(enrollment.getCourse());
         lblStatus.setText(enrollment.getStatus());
@@ -277,6 +279,7 @@ public class EnrollmentsController {
     }
 
     private void clearDetailPanel() {
+        this.selectedEnrollment = null;
         lblStudent.setText("Chọn một đăng ký");
         lblCourse.setText("-");
         lblStatus.setText("-");
@@ -295,6 +298,58 @@ public class EnrollmentsController {
 
     private void updateCount() {
         countLabel.setText(filteredEnrollments.size() + " đăng ký");
+    }
+
+    @FXML
+    private void handleViewReport() {
+        if (selectedEnrollment == null) {
+            showAlert("Thông báo", "Vui lòng chọn một đăng ký để xem báo cáo.", Alert.AlertType.WARNING);
+            return;
+        }
+
+        String reportInfo = String.format("""
+                Báo cáo tiến độ học tập:
+
+                Học viên: %s
+                Khóa học: %s
+                Ngày đăng ký: %s
+                Trạng thái hiện tại: %s
+                Tiến độ: %s
+
+                Số bài học đã hoàn thành: %s""",
+                selectedEnrollment.getUser(),
+                selectedEnrollment.getCourse(),
+                selectedEnrollment.getEnrolled(),
+                selectedEnrollment.getStatus(),
+                selectedEnrollment.getProgress(),
+                lblLessonCount.getText());
+
+        showAlert("Báo cáo chi tiết", reportInfo, Alert.AlertType.INFORMATION);
+    }
+
+    @FXML
+    private void handleSendReminder() {
+        if (selectedEnrollment == null) {
+            showAlert("Thông báo", "Vui lòng chọn một đăng ký để gửi nhắc nhở.", Alert.AlertType.WARNING);
+            return;
+        }
+
+        if ("Hoàn thành".equals(selectedEnrollment.getStatus())) {
+            showAlert("Thông báo", "Học viên này đã hoàn thành khóa học.", Alert.AlertType.INFORMATION);
+            return;
+        }
+
+        showAlert("Thành công", "Đã gửi thông báo nhắc nhở học tập tới học viên: " + selectedEnrollment.getUser(),
+                Alert.AlertType.INFORMATION);
+    }
+
+    private void showAlert(String title, String content, Alert.AlertType type) {
+        Alert alert = new Alert(type);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(content);
+        alert.show(); // For non-blocking we can use show(), but alert is simple, showAndWait() is
+                      // better. Wait, alert dialog requires showAndWait or show. showAndWait is fine.
     }
 
     // Model

@@ -44,28 +44,33 @@ public class DashboardDAO {
         return metrics;
     }
 
-    public List<RecentOrderDTO> getRecentOrders(int limit) {
-        List<RecentOrderDTO> list = new ArrayList<>();
-        String sql = "SELECT o.order_id, u.full_name as student_name, o.total_amount, o.status, " +
-                "(SELECT c.title FROM order_details od JOIN courses c ON od.course_id = c.course_id WHERE od.order_id = o.order_id LIMIT 1) as course_title "
+    public List<RecentEnrollmentDTO> getRecentEnrollments(int limit) {
+        List<RecentEnrollmentDTO> list = new ArrayList<>();
+        String sql = "SELECT e.enrolled_at, u.full_name as student_name, c.title as course_title, e.progress_percent, e.status "
                 +
-                "FROM orders o " +
-                "JOIN users u ON o.user_id = u.user_id " +
-                "ORDER BY o.created_at DESC LIMIT ?"; 
-                
+                "FROM enrollments e " +
+                "JOIN users u ON e.user_id = u.user_id " +
+                "JOIN courses c ON e.course_id = c.course_id " +
+                "ORDER BY e.enrolled_at DESC LIMIT ?";
+
         try (Connection conn = DatabaseConnect.getConnection();
                 PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, limit);
             try (ResultSet rs = stmt.executeQuery()) {
+                java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("dd/MM/yyyy HH:mm");
                 while (rs.next()) {
-                    RecentOrderDTO dto = new RecentOrderDTO();
-                    dto.orderId = "ORD-" + rs.getInt("order_id");
+                    RecentEnrollmentDTO dto = new RecentEnrollmentDTO();
+                    if (rs.getTimestamp("enrolled_at") != null) {
+                        dto.enrollmentDate = sdf.format(rs.getTimestamp("enrolled_at"));
+                    } else {
+                        dto.enrollmentDate = "N/A";
+                    }
                     dto.studentName = rs.getString("student_name");
                     dto.courseTitle = rs.getString("course_title");
                     if (dto.courseTitle == null) {
                         dto.courseTitle = "N/A";
                     }
-                    dto.total = "$" + rs.getDouble("total_amount");
+                    dto.progress = String.format("%.0f%%", rs.getDouble("progress_percent"));
                     dto.status = rs.getString("status");
                     list.add(dto);
                 }
@@ -76,17 +81,57 @@ public class DashboardDAO {
         return list;
     }
 
+    public double[] getRevenueByQuarter(int year) {
+        double[] quarters = new double[4];
+        String sql = "SELECT QUARTER(created_at), SUM(total_amount) FROM orders WHERE YEAR(created_at) = ? AND status = 'completed' GROUP BY QUARTER(created_at)";
+        try (Connection conn = DatabaseConnect.getConnection();
+                PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, year);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    int q = rs.getInt(1);
+                    double sum = rs.getDouble(2);
+                    if (q >= 1 && q <= 4)
+                        quarters[q - 1] = sum;
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return quarters;
+    }
+
+    public int[] getNewStudentsByQuarter(int year) {
+        int[] quarters = new int[4];
+        String sql = "SELECT QUARTER(created_at), COUNT(*) FROM users WHERE role = 'student' AND YEAR(created_at) = ? GROUP BY QUARTER(created_at)";
+        try (Connection conn = DatabaseConnect.getConnection();
+                PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, year);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    int q = rs.getInt(1);
+                    int count = rs.getInt(2);
+                    if (q >= 1 && q <= 4)
+                        quarters[q - 1] = count;
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return quarters;
+    }
+
     public static class DashboardMetrics {
         public double totalRevenue = 0;
         public int totalStudents = 0;
         public int totalCourses = 0;
     }
 
-    public static class RecentOrderDTO {
-        public String orderId;
+    public static class RecentEnrollmentDTO {
+        public String enrollmentDate;
         public String studentName;
         public String courseTitle;
-        public String total;
+        public String progress;
         public String status;
     }
 }

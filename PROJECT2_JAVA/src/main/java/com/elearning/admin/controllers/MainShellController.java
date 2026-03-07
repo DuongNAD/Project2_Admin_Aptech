@@ -35,10 +35,7 @@ public class MainShellController {
     private Button reviewsButton;
 
     @FXML
-    private Button discussionsButton;
-
-    @FXML
-    private Button certificatesButton;
+    private Button chatButton;
 
     @FXML
     public void initialize() {
@@ -89,15 +86,9 @@ public class MainShellController {
     }
 
     @FXML
-    private void onDiscussionsClicked() {
-        setActiveNav(discussionsButton);
-        loadCenter("/views/discussions_view.fxml");
-    }
-
-    @FXML
-    private void onCertificatesClicked() {
-        setActiveNav(certificatesButton);
-        loadCenter("/views/certificates_view.fxml");
+    private void onChatClicked() {
+        setActiveNav(chatButton);
+        loadCenter("/views/chat_view.fxml");
     }
 
     private void loadCenter(String fxmlPath) {
@@ -125,7 +116,7 @@ public class MainShellController {
         Button[] buttons = {
                 dashboardButton, coursesButton, usersButton, ordersButton,
                 categoriesButton, enrollmentsButton,
-                reviewsButton, discussionsButton, certificatesButton
+                reviewsButton, chatButton
         };
         for (Button b : buttons) {
             if (b == null)

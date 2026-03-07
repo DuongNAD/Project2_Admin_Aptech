@@ -15,8 +15,6 @@ import com.elearning.admin.dao.CategoryDAO;
 import java.util.List;
 import java.text.SimpleDateFormat;
 
-import java.util.function.Predicate;
-
 /**
  * Controller cho màn hình Quản lý Courses.
  * - Danh sách với filter, TableView, actions
@@ -125,36 +123,31 @@ public class CoursesController {
     }
 
     private void setupFilters() {
-        Predicate<CourseRow> filter = p -> {
-            String search = searchField.getText() == null ? "" : searchField.getText().toLowerCase();
+        Runnable applyFilter = () -> {
+            String search = searchField.getText() == null ? "" : searchField.getText().toLowerCase().trim();
             String cat = categoryFilter.getValue();
             String status = statusFilter.getValue();
-            if (search != null && !search.isBlank() && !p.getTitle().toLowerCase().contains(search))
-                return false;
-            if (cat != null && !cat.equals("Tất cả") && !cat.equals(p.getCategory()))
-                return false;
-            if (status != null && !status.equals("Tất cả") && !status.equals(p.getStatus()))
-                return false;
-            return true;
-        };
-        Runnable updateCount = () -> {
+
+            filteredCourses.setPredicate(p -> {
+                if (!search.isEmpty() && !p.getTitle().toLowerCase().contains(search))
+                    return false;
+                if (cat != null && !cat.equals("Tất cả") && !cat.equals(p.getCategory()))
+                    return false;
+                if (status != null && !status.equals("Tất cả") && !status.equals(p.getStatus()))
+                    return false;
+                return true;
+            });
+
             if (countLabel != null) {
                 countLabel.setText(filteredCourses.size() + " khóa học");
             }
         };
-        searchField.textProperty().addListener((o, a, b) -> {
-            filteredCourses.setPredicate(filter);
-            updateCount.run();
-        });
-        categoryFilter.valueProperty().addListener((o, a, b) -> {
-            filteredCourses.setPredicate(filter);
-            updateCount.run();
-        });
-        statusFilter.valueProperty().addListener((o, a, b) -> {
-            filteredCourses.setPredicate(filter);
-            updateCount.run();
-        });
-        updateCount.run();
+
+        searchField.textProperty().addListener((o, a, b) -> applyFilter.run());
+        categoryFilter.valueProperty().addListener((o, a, b) -> applyFilter.run());
+        statusFilter.valueProperty().addListener((o, a, b) -> applyFilter.run());
+
+        applyFilter.run();
     }
 
     private void setupTableSelection() {

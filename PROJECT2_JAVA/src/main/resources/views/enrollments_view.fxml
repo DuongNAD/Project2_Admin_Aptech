@@ -116,8 +116,8 @@
                 </VBox>
 
                 <VBox spacing="10">
-                    <Button text="📊 Xem báo cáo chi tiết" styleClass="enrollments-btn-report"/>
-                    <Button text="🔔 Gửi thông báo nhắc nhở" styleClass="enrollments-btn-notify"/>
+                    <Button text="📊 Xem báo cáo chi tiết" styleClass="enrollments-btn-report" onAction="#handleViewReport"/>
+                    <Button text="🔔 Gửi thông báo nhắc nhở" styleClass="enrollments-btn-notify" onAction="#handleSendReminder"/>
                 </VBox>
             </VBox>
         </HBox>
