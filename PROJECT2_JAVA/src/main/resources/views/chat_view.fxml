@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<ScrollPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.elearning.admin.controllers.ChatController"
+            fitToWidth="true"
+            styleClass="scroll-pane-clean">
+    <VBox spacing="20" styleClass="dashboard-root">
+
+        <!-- Header -->
+        <HBox spacing="16" alignment="CENTER_LEFT" styleClass="courses-header">
+            <VBox spacing="4" HBox.hgrow="ALWAYS">
+                <Label text="Đại Sảnh Thảo Luận" styleClass="courses-page-title"/>
+                <Label text="Quản lý toàn bộ tin nhắn trong phòng chat chung của hệ thống" styleClass="courses-page-subtitle"/>
+            </VBox>
+            <HBox spacing="8">
+                <Button text="Làm mới" onAction="#onRefreshClicked" styleClass="courses-btn-secondary"/>
+                <Button text="Xóa kết quả lọc" onAction="#onDeleteAllViolatingClicked" styleClass="courses-btn-danger"/>
+            </HBox>
+        </HBox>
+
+        <!-- Stats Bar -->
+        <HBox spacing="20" alignment="CENTER_LEFT" styleClass="courses-filter-card">
+            <VBox spacing="2" HBox.hgrow="ALWAYS">
+                <Label text="Tìm kiếm tin nhắn" styleClass="courses-filter-label"/>
+                <HBox spacing="8" alignment="CENTER_LEFT">
+                    <TextField fx:id="searchField"
+                               promptText="Tìm theo nội dung hoặc tên người dùng..."
+                               prefWidth="380"
+                               styleClass="courses-search-field"/>
+                    <Button text="Xóa" onAction="#onSearchCleared" styleClass="courses-btn-clear"/>
+                </HBox>
+            </VBox>
+            <Region HBox.hgrow="ALWAYS"/>
+            <VBox spacing="4" alignment="CENTER_RIGHT">
+                <Label fx:id="totalLabel" text="Tổng: 0 tin nhắn" styleClass="courses-count-badge"/>
+                <Label fx:id="countLabel" text="Hiển thị: 0 tin nhắn" styleClass="discussions-count-label"/>
+            </VBox>
+        </HBox>
+
+        <!-- Messages List -->
+        <VBox styleClass="courses-table-card" spacing="0" VBox.vgrow="ALWAYS">
+            <HBox alignment="CENTER_LEFT" spacing="12" styleClass="discussions-thread-header">
+                <Label text="Danh sách tin nhắn (mới nhất trước)" styleClass="discussions-thread-title"/>
+            </HBox>
+            <VBox fx:id="messagesContainer" spacing="8" styleClass="discussions-comments-list">
+                <Label text="Đang tải tin nhắn..." styleClass="discussions-empty-message"/>
+            </VBox>
+        </VBox>
+
+    </VBox>
+</ScrollPane>

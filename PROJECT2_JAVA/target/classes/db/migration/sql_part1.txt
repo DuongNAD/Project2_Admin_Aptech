@@ -1,0 +1,135 @@
+-- phpMyAdmin SQL Dump
+-- version 5.2.1
+-- Máy chủ: 127.0.0.1
+-- Thời gian đã tạo: Th3 07, 2026 lúc 07:19 AM
+-- Phiên bản máy phục vụ: 10.4.32-MariaDB
+-- Phiên bản PHP: 8.2.12
+
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+START TRANSACTION;
+SET time_zone = "+00:00";
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8mb4 */;
+
+-- Cơ sở dữ liệu: `elearning_system`
+
+-- Cấu trúc bảng cho bảng `admins`
+CREATE TABLE `admins` (
+  `admin_id` int(11) NOT NULL,
+  `full_name` varchar(255) NOT NULL,
+  `email` varchar(255) NOT NULL,
+  `password_hash` varchar(255) NOT NULL,
+  `role` varchar(50) DEFAULT 'admin',
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+INSERT INTO `admins` (`admin_id`, `full_name`, `email`, `password_hash`, `role`, `created_at`) VALUES
+(1, 'Super Admin', 'admin@elearning.com', '$2a$10$EIFzOM8E0S0QkR1S2z1l1eB1yOOT005P7.i8E0bC.00A.7E0T/', 'super_admin', '2026-03-04 17:01:13');
+
+-- Cấu trúc bảng cho bảng `articles`
+CREATE TABLE `articles` (
+  `article_id` int(11) NOT NULL,
+  `title` varchar(255) NOT NULL,
+  `description` text DEFAULT NULL,
+  `content` longtext DEFAULT NULL,
+  `image_url` varchar(500) DEFAULT NULL,
+  `tags` varchar(100) DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+INSERT INTO `articles` (`article_id`, `title`, `description`, `content`, `image_url`, `tags`, `created_at`) VALUES
+(1, 'DeepSeek-R1: Kẻ thách thức GPT-4?', 'Phân tích mô hình AI mới với khả năng suy luận vượt trội...', 'Trí tuệ nhân tạo đang bước vào một kỷ nguyên mới, và sự ra mắt của DeepSeek-R1 đang làm rúng động cả cộng đồng công nghệ. Không giống như các mô hình ngôn ngữ lớn (LLM) đóng kín, DeepSeek-R1 đi theo hướng mã nguồn mở (Open-source) nhưng lại sở hữu khả năng suy luận (Reasoning) và giải quyết vấn đề toán học, lập trình đáng kinh ngạc.\n\nTrong các bài kiểm tra benchmark gần đây, R1 đã cho thấy hiệu năng tiệm cận, thậm chí vượt trội hơn GPT-4o ở một số tác vụ logic phức tạp. Điểm đặc biệt của mô hình này là cơ chế "chuỗi suy nghĩ" (Chain-of-Thought) được tối ưu hóa cực tốt, giúp AI "nghĩ" ra các bước giải quyết vấn đề một cách minh bạch trước khi đưa ra câu trả lời cuối cùng.\n\nLiệu đây có phải là dấu chấm hết cho thế độc tôn của OpenAI? Dù chưa thể khẳng định, nhưng chắc chắn DeepSeek-R1 đang mở ra cơ hội tiếp cận AI đỉnh cao cho các nhà phát triển độc lập với chi phí rẻ hơn rất nhiều.', 'https://img.freepik.com/free-photo/ai-technology-brain-background-digital-transformation-concept_53876-124672.jpg', '#AI News', '2026-02-10 08:22:39'),
+(2, 'Lộ trình Backend Java 2026', 'Tổng hợp kỹ năng Spring Boot 3, Microservices...', 'Java chưa bao giờ là một ngôn ngữ "lỗi thời". Bước sang năm 2026, vai trò của một Backend Developer chuyên Java đòi hỏi sự cập nhật liên tục để đáp ứng các hệ thống tải cao (High-load systems).\n\nLộ trình năm nay nhấn mạnh vào việc làm chủ Java 21+ với các tính năng đột phá như Virtual Threads (Project Loom) giúp xử lý đồng thời hàng triệu kết nối mà không ngốn tài nguyên RAM. Bên cạnh đó, bạn cần nắm vững kiến trúc Microservices, sử dụng thành thạo các Message Broker như Apache Kafka hoặc RabbitMQ để giao tiếp giữa các services.\n\nĐừng quên trang bị kiến thức về Cloud (AWS/GCP), kỹ năng viết Unit Test hiệu quả và hiểu sâu về cách tối ưu hóa truy vấn Database (SQL Tuning). Một Backend Dev giỏi không chỉ biết viết code chạy được, mà còn phải viết code dễ bảo trì và mở rộng!', 'https://img.freepik.com/free-vector/laptop-with-program-code-isometric-icon-software-development-programming-applications-dark-neon_39422-971.jpg', '#Career Path', '2026-02-10 08:22:39'),
+(4, 'Lộ trình Backend Java Spring Boot 2026', 'Tổng hợp các kỹ năng cần thiết từ cơ bản đến nâng cao: Microservices, Docker, K8s và Cloud Native.', 'Nếu Java là nền móng thì Spring Boot chính là "vũ khí tối thượng" của mọi Backend Developer. Trong năm 2026, Spring Boot 3.x đã trở thành tiêu chuẩn bắt buộc. Việc chuyển đổi hoàn toàn sang Jakarta EE và hỗ trợ native image với GraalVM giúp các ứng dụng Spring khởi động trong tích tắc và tốn cực ít bộ nhớ.\n\nBạn cần tập trung vào việc xây dựng RESTful API chuẩn REST, bảo mật API với Spring Security (JWT, OAuth2) và quản lý dữ liệu hiệu quả với Spring Data JPA. Xu hướng hiện tại cũng yêu cầu Developer tích hợp sâu với các công cụ giám sát (Observability) như Prometheus, Grafana thông qua Spring Boot Actuator.\n\nĐể tiến xa hơn, hãy làm quen với Spring Cloud để xử lý các bài toán hệ thống phân tán như Service Discovery, API Gateway và Circuit Breaker.', 'https://img.freepik.com/free-vector/laptop-with-program-code-isometric-icon-software-development-programming-applications-dark-neon_39422-971.jpg', '#Java #Career', '2026-02-10 08:35:00'),
+(5, 'Top 5 Xu hướng Công nghệ Web năm nay', 'Sự trỗi dậy của Server Components, WebAssembly và các framework siêu nhẹ đang thay đổi cách chúng ta code.', 'Thế giới Web Frontend và Backend đang thay đổi với tốc độ chóng mặt. Dưới đây là 5 xu hướng định hình bức tranh công nghệ Web trong năm nay:\n\nThứ nhất là sự trỗi dậy của Server Components (như React Server Components), giúp giảm thiểu lượng JavaScript gửi xuống trình duyệt, tăng tốc độ tải trang đáng kể. Thứ hai, WebAssembly (Wasm) đang mang sức mạnh của C++, Rust lên trình duyệt, cho phép chạy các ứng dụng đồ họa 3D, chỉnh sửa video mượt mà như app native.\n\nCác xu hướng tiếp theo bao gồm Edge Computing (đưa xử lý logic ra các server gần người dùng nhất), tích hợp AI tạo sinh (Generative AI) trực tiếp vào UI/UX, và cuối cùng là sự phổ biến của các framework siêu nhẹ (như Astro hay Qwik) tập trung tối đa vào hiệu năng (Performance).', 'https://img.freepik.com/free-photo/programming-background-with-person-working-with-codes-computer_23-2150010125.jpg', '#WebDev #Trends', '2026-02-10 08:35:00'),
+(6, 'Flutter vs React Native: Cuộc chiến chưa hồi kết', 'So sánh chi tiết về hiệu năng, cộng đồng và khả năng tuyển dụng của hai Cross-platform framework hot nhất hiện nay.', 'Cuộc tranh luận xem đâu là framework Cross-platform tốt nhất để lập trình di động vẫn luôn rực lửa. React Native, với lợi thế sử dụng JavaScript và hệ sinh thái khổng lồ từ React, vẫn là lựa chọn hàng đầu cho các team Web muốn làm App nhanh chóng.\n\nTuy nhiên, Flutter của Google đang ngày càng lấn lướt nhờ hiệu năng mượt mà (chạy thẳng ở dạng mã máy) và trải nghiệm UI nhất quán trên mọi nền tảng (iOS, Android, Web, Desktop) nhờ engine đồ họa Impeller mới. Ngôn ngữ Dart của Flutter cũng được đánh giá là chặt chẽ và ít lỗi ngầm hơn JS.\n\nSự lựa chọn phụ thuộc vào team của bạn: Nếu có sẵn nhân lực mạnh về JS/React, hãy chọn React Native. Nếu muốn trải nghiệm UI mượt như app Native và hiệu ứng phức tạp, Flutter là chân ái.', 'https://img.freepik.com/free-vector/app-development-banner_33099-1720.jpg', '#Mobile #Flutter', '2026-02-10 08:35:51'),
+(7, 'Docker & Kubernetes: Từ Zero đến Hero', 'Hướng dẫn triển khai hệ thống Microservices tự động hóa với CI/CD, giúp bạn nâng tầm kỹ năng DevOps.', 'Không quá lời khi nói rằng Docker và Kubernetes (K8s) đã định hình lại hoàn toàn ngành công nghiệp phần mềm. Quá trình "Container hóa" (Containerization) giúp đóng gói ứng dụng và mọi môi trường phụ thuộc vào một khối thống nhất, chấm dứt vĩnh viễn câu nói kinh điển: "Code chạy ngon trên máy tôi nhưng lỗi trên server".\n\nKhi ứng dụng lớn lên và có hàng trăm container cần quản lý, đó là lúc Kubernetes tỏa sáng. K8s hoạt động như một "nhạc trưởng" (Orchestration), tự động phân bổ tài nguyên, tự động khởi động lại container bị lỗi (Self-healing), và tăng giảm số lượng server (Auto-scaling) tùy theo lượng truy cập.\n\nNắm vững hai công cụ này là bước đệm bắt buộc để bạn bước chân vào con đường DevOps chuyên nghiệp và làm chủ Cloud Native.', 'https://img.freepik.com/free-vector/cloud-computing-modern-flat-concept-illustration_53876-112954.jpg', '#DevOps #Docker', '2026-02-10 08:35:51'),
+(8, 'Blockchain không chỉ là Bitcoin', 'Khám phá ứng dụng thực tế của Smart Contracts trong Y tế, Tài chính và Chuỗi cung ứng.', 'Nhắc đến Blockchain, nhiều người chỉ nghĩ đến Bitcoin hay tiền điện tử. Tuy nhiên, công nghệ chuỗi khối này mang tiềm năng ứng dụng thực tế lớn hơn thế rất nhiều nhờ đặc tính phi tập trung (Decentralized), minh bạch và không thể bị giả mạo.\n\nHợp đồng thông minh (Smart Contracts) đang được ứng dụng mạnh mẽ trong chuỗi cung ứng (Supply Chain) để truy xuất nguồn gốc hàng hóa từ nông trại đến bàn ăn. Trong y tế, Blockchain giúp lưu trữ hồ sơ bệnh án an toàn và cho phép bệnh nhân kiểm soát ai được quyền xem dữ liệu của mình.\n\nĐặc biệt, công nghệ Web3 và Định danh phi tập trung (DID) hứa hẹn trả lại quyền làm chủ dữ liệu cho người dùng internet, thoát khỏi sự kiểm soát của các ông lớn công nghệ. Blockchain thực sự là một cuộc cách mạng về sự tin tưởng.', 'https://img.freepik.com/free-photo/cryptocurrency-coding-digital-black-background-open-source-blockchain-concept_53876-124641.jpg', '#Blockchain #Web3', '2026-02-10 08:35:51'),
+(9, 'Python hay R: Ngôn ngữ nào cho Phân tích Dữ liệu?', 'Lựa chọn ngôn ngữ phù hợp để bắt đầu con đường trở thành Data Scientist chuyên nghiệp trong năm 2026.', 'Bước chân vào ngành Khoa học dữ liệu (Data Science), câu hỏi đầu tiên luôn là: Chọn Python hay R? Câu trả lời không hoàn toàn là "ngôn ngữ nào tốt hơn\", mà là "bạn đang muốn giải quyết bài toán gì".\n\nR được thiết kế bởi các nhà thống kê học, do đó nó sở hữu một thư viện khổng lồ cho các phân tích toán học chuyên sâu và biểu đồ cực kỳ đẹp mắt (điển hình là ggplot2). Nếu bạn làm việc trong học thuật, nghiên cứu y sinh hay thống kê thuần túy, R là vô đối.\n\nNgược lại, Python là một ngôn ngữ đa dụng (General-purpose). Nhờ các thư viện đỉnh cao như Pandas, NumPy và Scikit-Learn, Python đặc biệt mạnh mẽ trong việc xử lý dữ liệu lớn, dọn dẹp dữ liệu (Data Cleaning) và xây dựng các mô hình Machine Learning/Deep Learning. Trong môi trường doanh nghiệp (Production), Python thường được ưu tiên hơn.', 'https://img.freepik.com/free-vector/data-analysis-landing-page_52683-19364.jpg', '#DataScience #Python', '2026-02-10 08:35:51'),
+(10, 'Kỹ năng mềm cho Developer: Đừng chỉ biết Code', 'Giao tiếp, làm việc nhóm và tư duy giải quyết vấn đề - Chìa khóa để thăng tiến lên vị trí Senior/Leader.', 'Bạn có thể là một siêu sao lập trình, fix bug thần tốc, thiết kế hệ thống hoàn hảo. Nhưng nếu không có kỹ năng mềm (Soft Skills), sự nghiệp của bạn sẽ rất khó để bứt phá lên vị trí Senior, Tech Lead hay Manager.\n\nKỹ năng quan trọng nhất chính là Giao tiếp (Communication). Khả năng giải thích một vấn đề kỹ thuật phức tạp cho khách hàng hoặc sếp (những người không hiểu về code) hiểu được là một nghệ thuật. Thứ hai là Kỹ năng làm việc nhóm (Teamwork). Code thường được viết trong tập thể, biết cách review code tinh tế, lắng nghe ý kiến người khác và không giữ "cái tôi" quá lớn là điều vô cùng cần thiết.\n\nNgoài ra, Khả năng quản lý thời gian và Tự học (Self-learning) cũng là những yếu tố sống còn giúp bạn tồn tại trong ngành công nghệ luôn thay đổi từng ngày này. Hãy nhớ: Code là công cụ, con người mới là yếu tố quyết định.', 'https://img.freepik.com/free-vector/teamwork-concept-landing-page_52683-20165.jpg', '#Career #SoftSkills', '2026-02-10 08:35:51');
+
+-- Cấu trúc bảng cho bảng `cart_items`
+CREATE TABLE `cart_items` (
+  `cart_item_id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `course_id` int(11) NOT NULL,
+  `added_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Cấu trúc bảng cho bảng `categories`
+CREATE TABLE `categories` (
+  `category_id` int(11) NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `description` text DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+INSERT INTO `categories` (`category_id`, `name`, `description`) VALUES
+(2, 'Lập trình Web', 'Xây dựng website hiện đại với React, Next.js và Node.js'),
+(3, 'Trí tuệ nhân tạo (AI)', 'Khám phá thế giới của Machine Learning và Deep Learning'),
+(4, 'Thiết kế UI/UX', 'Thiết kế giao diện và trải nghiệm người dùng tinh tế'),
+(5, 'Phát triển Mobile', 'Lập trình ứng dụng đa nền tảng với Flutter và React Native'),
+(6, 'Khoa học dữ liệu', 'Phân tích và trực quan hóa dữ liệu chuyên sâu với Python'),
+(8, 'Digital Marketing', 'Chiến lược truyền thông và quảng cáo đa kênh hiệu quả'),
+(9, 'Kinh doanh khởi nghiệp', 'Kiến thức quản trị và vận hành doanh nghiệp trẻ'),
+(10, 'Kỹ năng mềm', 'Phát triển bản thân qua giao tiếp và quản lý dự án'),
+(11, 'Ngoại ngữ chuyên ngành', 'Tiếng Anh dành riêng cho dân kỹ thuật và lập trình');
+
+-- Cấu trúc bảng cho bảng `certificates`
+CREATE TABLE `certificates` (
+  `certificate_id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `course_id` int(11) NOT NULL,
+  `issue_date` timestamp NOT NULL DEFAULT current_timestamp(),
+  `pdf_url` varchar(255) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Cấu trúc bảng cho bảng `chat_messages`
+CREATE TABLE `chat_messages` (
+  `msg_id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `message_text` text NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+INSERT INTO `chat_messages` (`msg_id`, `user_id`, `message_text`, `created_at`) VALUES
+(1, 4, 'Xin chào', '2026-02-28 08:11:17'),
+(2, 2, 'Chào các bạn, mình là thành viên mới. Rất vui được học cùng mọi người!', '2026-03-06 08:00:00'),
+(3, 4, 'Chào bạn nha! Khóa học này nhiều kiến thức hay lắm.', '2026-03-06 08:05:00'),
+(4, 2, 'Tuyệt quá. Mọi người cho mình hỏi bài tập số 2 làm thế nào nhỉ?', '2026-03-06 08:10:00'),
+(5, 4, 'Bạn thử xem lại video bài giảng số 4 phần cuối nhé, thầy có hướng dẫn chi tiết đó.', '2026-03-06 08:15:00'),
+(6, 2, 'Cảm ơn bạn nhiều nha, mình fix được bug rồi!', '2026-03-06 08:20:00');
+
+-- Cấu trúc bảng cho bảng `coding_exercises`
+CREATE TABLE `coding_exercises` (
+  `exercise_id` int(11) NOT NULL,
+  `course_id` int(11) DEFAULT NULL,
+  `title` varchar(255) NOT NULL,
+  `description` text DEFAULT NULL,
+  `starter_code` text DEFAULT NULL,
+  `test_input` text DEFAULT NULL,
+  `expected_output` text DEFAULT NULL,
+  `points` int(11) DEFAULT 10,
+  `language` varchar(20) DEFAULT 'java'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+INSERT INTO `coding_exercises` (`exercise_id`, `course_id`, `title`, `description`, `starter_code`, `test_input`, `expected_output`, `points`, `language`) VALUES
+(22, 48, 'Bài 1: Hello React World', '<h3>Đề bài:</h3><p>Hãy in ra màn hình dòng chữ: <b>Hello React</b></p>', 'console.log("Hello React");', NULL, 'Hello React', 10, 'nodejs'),
+(23, 48, 'Bài 2: ES6 Arrow Function', '<h3>Đề bài:</h3><p>Viết một Arrow Function tính tổng 2 số 10 và 20 và in ra kết quả.</p>', 'const sum = (a, b) => a + b;\nconsole.log(sum(10, 20));', NULL, '30', 10, 'nodejs'),
+(24, 48, 'Bài 3: Xử lý mảng (Map)', '<h3>Đề bài:</h3><p>Cho mảng [1, 2, 3]. Hãy in ra mảng mới với các giá trị gấp đôi. Format in: <b>2,4,6</b></p>', 'const arr = [1, 2, 3];\nconst doubled = arr.map(x => x * 2);\nconsole.log(doubled.join(","));', NULL, '2,4,6', 10, 'nodejs'),
+(25, 56, 'Bài 1: Xin chào Java', '\r\n    <div class="theory-box">\r\n        <b>Kiến thức:</b> Mọi chương trình Java đều bắt đầu từ một <code>class</code> và hàm <code>main</code>.\r\n    </div>\r\n\r\n    <h3>1. Lệnh in ra màn hình</h3>\r\n    <p>Trong Java, lệnh in đầy đủ là:</p>\r\n    <code>System.out.println("Nội dung");</code>\r\n\r\n    <div class="example-box">\r\n        <b>Ví dụ:</b>\r\n        <pre>\r\npublic class Main {\r\n    public static void main(String[] args) {\r\n        System.out.println("Xin chao!");\r\n    }\r\n}</pre>\r\n    </div>\r\n\r\n    <h3>2. Nhiệm vụ</h3>\r\n    <p>Hoàn thành code để in ra dòng chữ: <b class="highlight">Hello Java</b></p>\r\n', 'public class Main {\n    public static void main(String[] args) {\n        System.out.println("Hello Java");\n    }\n}', NULL, 'Hello Java', 10, 'java'),
+(26, 56, 'Bài 2: Tính tổng mảng', '<h3>Đề bài:</h3><p>Tính tổng các số từ 1 đến 5 (1+2+3+4+5) và in ra kết quả.</p>', 'public class Main {\n    public static void main(String[] args) {\n        int sum = 0;\n        for(int i=1; i<=5; i++) sum += i;\n        System.out.println(sum);\n    }\n}', NULL, '15', 10, 'java'),
+(27, 53, 'Bài 3: Kiểm tra số chẵn lẻ', '<h3>Đề bài:</h3><p>Kiểm tra số 10 là chẵn hay lẻ? Nếu chẵn in <b>Even</b>, lẻ in <b>Odd</b>.</p>', 'public class Main {\n    public static void main(String[] args) {\n        int n = 10;\n        if(n % 2 == 0) System.out.println("Even");\n        else System.out.println("Odd");\n    }\n}', NULL, 'Even', 10, 'java'),
+(28, 50, 'Bài 1: C++ Hello World', '<h3>Đề bài:</h3><p>Sử dụng <code>cout</code> để in ra: <b>Hello CPP</b></p>', '#include <iostream>\nusing namespace std;\n\nint main() {\n    cout << "Hello CPP";\n    return 0;\n}', NULL, 'Hello CPP', 10, 'cpp'),
+(29, 50, 'Bài 2: Con trỏ cơ bản', '<h3>Đề bài:</h3><p>Khai báo biến a = 100. Dùng con trỏ để in ra giá trị của a.</p>', '#include <iostream>\nusing namespace std;\n\nint main() {\n    int a = 100;\n    int* ptr = &a;\n    cout << *ptr;\n    return 0;\n}', NULL, '100', 10, 'cpp');
+
+-- Cấu trúc bảng cho bảng `coupons`
+CREATE TABLE `coupons` (
+  `coupon_id` int(11) NOT NULL,
+  `code` varchar(50) NOT NULL,
+  `discount_percent` float NOT NULL,
+  `is_active` tinyint(1) DEFAULT 1,
+  `expiration_date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
